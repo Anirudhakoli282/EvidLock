@@ -1,0 +1,71 @@
+<div class="modal-header bg-navy text-white d-flex justify-content-between align-items-center" style="background-color: #0f2043;">
+  <div>
+    <h5 class="modal-title fw-bold text-white mb-0">
+      <i class="bi bi-shield-check text-success me-2"></i>Review Pending Custody Transfer
+    </h5>
+    <small class="text-white-50">Transfer Request #{{ request.id }} | Evidence Item #{{ request.evidenceItemId }}</small>
+  </div>
+  <button type="button" class="btn-close btn-close-white" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body p-4 bg-light">
+  <!-- Alerts -->
+  <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center py-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <div>{{ errorMessage }}</div>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center py-2" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <div>{{ successMessage }}</div>
+  </div>
+
+  <!-- Transfer Details Card -->
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body p-3">
+      <h6 class="fw-bold text-primary mb-3"><i class="bi bi-info-circle me-1"></i>Transfer Specification</h6>
+      <div class="row g-2 small">
+        <div class="col-sm-4 text-muted">Releasing Custodian:</div>
+        <div class="col-sm-8 fw-semibold text-dark">{{ request.fromCustodianId }}</div>
+
+        <div class="col-sm-4 text-muted">Assigned Recipient:</div>
+        <div class="col-sm-8 fw-semibold text-success">{{ request.toCustodianId }}</div>
+
+        <div class="col-sm-4 text-muted">Stated Purpose:</div>
+        <div class="col-sm-8 fst-italic text-dark">{{ request.reason }}</div>
+
+        <div class="col-sm-4 text-muted">Initiated At:</div>
+        <div class="col-sm-8 text-secondary">{{ request.createdAt || request.releasedAt }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step-Up Confirmation Box -->
+  <form [formGroup]="acceptForm" (ngSubmit)="acceptTransfer()">
+    <div class="card border-primary mb-3">
+      <div class="card-body p-3 bg-white">
+        <label class="form-label fw-bold text-dark">
+          <i class="bi bi-key-fill text-warning me-1"></i>Step-Up Password Confirmation to Accept Custody
+        </label>
+        <input type="password" class="form-control" formControlName="password" placeholder="Enter your password (e.g. Web2324.)" [class.is-invalid]="acceptForm.get('password')?.touched && acceptForm.get('password')?.invalid">
+        <div class="invalid-feedback">Password is required to assume legal custody.</div>
+        <small class="text-muted mt-1 d-block">
+          By entering your credentials and clicking Accept, you legally acknowledge taking physical/digital custody of this evidence item and append a cryptographic block to its chain.
+        </small>
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <button type="button" class="btn btn-outline-danger" (click)="rejectTransfer()" [disabled]="loading">
+        <i class="bi bi-x-circle me-1"></i>Reject Custody
+      </button>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()" [disabled]="loading">Close</button>
+        <button type="submit" class="btn btn-success fw-bold" [disabled]="acceptForm.invalid || loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!loading" class="bi bi-check2-circle me-1"></i>Accept Custody Handover
+        </button>
+      </div>
+    </div>
+  </form>
+</div>

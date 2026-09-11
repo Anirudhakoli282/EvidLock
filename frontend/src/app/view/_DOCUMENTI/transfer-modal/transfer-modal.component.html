@@ -1,0 +1,87 @@
+<div class="modal-header bg-navy text-white d-flex justify-content-between align-items-center" style="background-color: #0f2043;">
+  <div>
+    <h5 class="modal-title fw-bold text-white mb-0">
+      <i class="bi bi-arrow-left-right text-warning me-2"></i>Initiate Dual-Custody Transfer
+    </h5>
+    <small class="text-white-50">Evidence Item: <strong class="text-white">{{ item.evidenceTag }}</strong></small>
+  </div>
+  <button type="button" class="btn-close btn-close-white" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body p-4 bg-light">
+  <!-- Alerts -->
+  <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center py-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <div>{{ errorMessage }}</div>
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success d-flex align-items-center py-2" role="alert">
+    <i class="bi bi-check-circle-fill me-2"></i>
+    <div>{{ successMessage }}</div>
+  </div>
+
+  <!-- Security Protocol Notice -->
+  <div class="card border-0 shadow-sm mb-3 bg-white">
+    <div class="card-body p-3">
+      <div class="d-flex align-items-start">
+        <i class="bi bi-shield-lock-fill text-primary fs-3 me-3"></i>
+        <div>
+          <h6 class="fw-bold mb-1 text-dark">Dual-Custody Handover Protocol</h6>
+          <p class="text-muted small mb-0">
+            Custody transfer cannot be unilateral. You are signing a release request. The target custodian must authenticate with step-up verification to accept custody into their ledger.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <form [formGroup]="transferForm" (ngSubmit)="submitTransfer()">
+    <!-- Target Custodian -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Recipient Custodian / Officer Email <span class="text-danger">*</span></label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-person-badge"></i></span>
+        <input type="email" class="form-control" formControlName="toCustodianId" placeholder="e.g. investigator@evidlock.gov" [class.is-invalid]="transferForm.get('toCustodianId')?.touched && transferForm.get('toCustodianId')?.invalid">
+      </div>
+      <div class="invalid-feedback" *ngIf="transferForm.get('toCustodianId')?.touched && transferForm.get('toCustodianId')?.invalid">
+        A valid officer email address is required.
+      </div>
+      <small class="text-muted">Common: investigator&#64;evidlock.gov, custodian&#64;evidlock.gov, supervisor&#64;evidlock.gov</small>
+    </div>
+
+    <!-- Reason / Purpose -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Purpose / Justification of Transfer <span class="text-danger">*</span></label>
+      <textarea class="form-control" rows="2" formControlName="reason" placeholder="State operational reason for custody movement..." [class.is-invalid]="transferForm.get('reason')?.touched && transferForm.get('reason')?.invalid"></textarea>
+      <div class="invalid-feedback" *ngIf="transferForm.get('reason')?.touched && transferForm.get('reason')?.invalid">
+        Reason must be at least 5 characters.
+      </div>
+      <!-- Quick Reason Chips -->
+      <div class="mt-2 d-flex flex-wrap gap-1">
+        <button type="button" class="btn btn-sm btn-outline-secondary py-0 px-2" style="font-size: 0.75rem;" *ngFor="let r of commonReasons" (click)="setReason(r)">
+          {{ r }}
+        </button>
+      </div>
+    </div>
+
+    <!-- Step-Up Password Confirmation -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">
+        <i class="bi bi-key-fill text-warning me-1"></i>Step-Up Password Confirmation <span class="text-danger">*</span>
+      </label>
+      <input type="password" class="form-control" formControlName="password" placeholder="Enter your login password to sign release" [class.is-invalid]="transferForm.get('password')?.touched && transferForm.get('password')?.invalid">
+      <div class="invalid-feedback" *ngIf="transferForm.get('password')?.touched && transferForm.get('password')?.invalid">
+        Password confirmation is required to authorize cryptographic custody release.
+      </div>
+      <small class="text-muted">Re-enter your account password (e.g. Web2324.) to seal the release request.</small>
+    </div>
+
+    <div class="modal-footer px-0 pb-0 pt-3 bg-light border-0">
+      <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()" [disabled]="loading">Cancel</button>
+      <button type="submit" class="btn btn-warning fw-bold text-dark" [disabled]="transferForm.invalid || loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!loading" class="bi bi-send-check-fill me-1"></i>Authorize Transfer Request
+      </button>
+    </div>
+  </form>
+</div>

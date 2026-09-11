@@ -1,0 +1,230 @@
+<main id="main" class="main">
+
+  <div class="pagetitle d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="text-navy fw-bold"><i class="bi bi-shield-lock-fill text-primary me-2"></i>EvidLock Intelligence Dashboard</h1>
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item"><a routerLink="/">Home</a></li>
+          <li class="breadcrumb-item active">Evidence & Custody Analytics</li>
+        </ol>
+      </nav>
+    </div>
+    <div>
+      <span class="badge px-3 py-2 fs-6 shadow-sm"
+            [ngClass]="{
+              'bg-primary': auth.isSupervisor(),
+              'bg-info text-dark': auth.isInvestigator(),
+              'bg-warning text-dark': auth.isCustodian(),
+              'bg-secondary': auth.isAuditor()
+            }">
+        <i class="bi bi-person-badge me-1"></i>{{ auth.getRole() }} ROLE
+      </span>
+    </div>
+  </div>
+
+  <!-- Quick KPI Metrics Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 me-3">
+            <i class="bi bi-folder2-open fs-3"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Active Cases</div>
+            <div class="fs-3 fw-bold text-dark">{{ metrics.totalCases || 0 }}</div>
+            <div class="small text-success">{{ metrics.openCases || 0 }} Open Dossiers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 me-3">
+            <i class="bi bi-archive-fill fs-3"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Evidence Vault</div>
+            <div class="fs-3 fw-bold text-dark">{{ metrics.totalEvidence || 0 }}</div>
+            <div class="small text-muted">Secured Items</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 me-3">
+            <i class="bi bi-lock-fill fs-3"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Legal Holds Active</div>
+            <div class="fs-3 fw-bold text-dark">{{ metrics.legalHoldCount || 0 }}</div>
+            <div class="small text-info fw-semibold">Disposal Locked</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-3">
+      <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-body p-3 d-flex align-items-center">
+          <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 me-3">
+            <i class="bi bi-arrow-left-right fs-3"></i>
+          </div>
+          <div>
+            <div class="text-muted small text-uppercase fw-semibold">Pending Transfers</div>
+            <div class="fs-3 fw-bold text-dark">{{ metrics.pendingTransfersCount || 0 }}</div>
+            <div class="small text-warning fw-semibold">Dual Confirmation</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="section dashboard">
+    <div class="row">
+
+      <!-- Left Column: Visual Charts & Retention Section -->
+      <div class="col-lg-8">
+        <!-- Dual ChartJS Analytics Reports Component -->
+        <app-reports
+          [openCases]="metrics.openCases || 2"
+          [closedCases]="metrics.closedCases || 1"
+          [archivedCases]="metrics.archivedCases || 1"
+          [verifiedCount]="(metrics.totalEvidence || 3) - (metrics.compromisedCount || 0)"
+          [compromisedCount]="metrics.compromisedCount || 0"
+          [legalHoldCount]="metrics.legalHoldCount || 1"
+          [nearingRetentionCount]="metrics.nearingRetentionCount || 1"
+          [disposalEligibleCount]="metrics.disposalEligibleCount || 0">
+        </app-reports>
+
+        <!-- Evidence Items Nearing Retention Deadline Table -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0 fw-bold text-dark">
+              <i class="bi bi-clock-history text-warning me-2"></i>Evidence Retention & Disposal Alerts
+            </h5>
+            <span class="badge bg-warning text-dark">{{ nearingRetentionItems.length }} Expiring Soon</span>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light small text-uppercase text-muted">
+                  <tr>
+                    <th>Tag</th>
+                    <th>Description</th>
+                    <th>Retention Date</th>
+                    <th>Custodian</th>
+                    <th>Status</th>
+                    <th>Hold</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of nearingRetentionItems">
+                    <td><span class="badge bg-secondary font-monospace">{{ item.evidenceTag }}</span></td>
+                    <td class="text-truncate" style="max-width: 200px;">{{ item.description }}</td>
+                    <td><span class="text-danger fw-semibold">{{ item.retentionDate }}</span></td>
+                    <td class="small">{{ item.currentCustodianId }}</td>
+                    <td><span class="badge bg-light text-dark border">{{ item.status }}</span></td>
+                    <td>
+                      <span class="badge" [ngClass]="item.legalHold ? 'bg-danger' : 'bg-success'">
+                        {{ item.legalHold ? 'LOCKED' : 'NO HOLD' }}
+                      </span>
+                    </td>
+                  </tr>
+                  <tr *ngIf="nearingRetentionItems.length === 0">
+                    <td colspan="6" class="text-center text-muted py-3">
+                      <i class="bi bi-check-circle text-success me-2"></i>No evidence items nearing retention deadline within 30 days.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Recent Cryptographic Custody Ledger Feed & Actions -->
+      <div class="col-lg-4">
+
+        <!-- Retention Policy Alert Actions (Supervisors) -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4" *ngIf="auth.isSupervisor()">
+          <div class="card-body">
+            <h5 class="card-title fw-bold text-primary mb-2">
+              <i class="bi bi-bell-fill me-2"></i>Retention Policy Monitor
+            </h5>
+            <p class="small text-muted mb-3">
+              Trigger the JavaMail compliance engine to scan non-held evidence items and dispatch automated disposal alerts to supervisors.
+            </p>
+            <button class="btn btn-outline-primary btn-sm w-100 py-2 fw-semibold"
+                    (click)="triggerRetentionCheck()" [disabled]="loadingRetentionCheck">
+              <span *ngIf="!loadingRetentionCheck"><i class="bi bi-send me-1"></i>Run Retention Scan & Notify</span>
+              <span *ngIf="loadingRetentionCheck" class="spinner-border spinner-border-sm me-1"></span>
+            </button>
+            <div *ngIf="retentionCheckMsg" class="alert alert-info py-2 small mt-3 mb-0">
+              {{ retentionCheckMsg }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Custody Ledger Events (Append-Only Feed) -->
+        <div class="card border-0 shadow-sm rounded-3 mb-4">
+          <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0 fw-bold text-dark">
+              <i class="bi bi-link-45deg text-primary me-2"></i>Custody Ledger Feed
+            </h5>
+            <span class="badge bg-success">Append-Only</span>
+          </div>
+          <div class="card-body p-3">
+            <div class="timeline" *ngIf="recentEvents.length > 0">
+              <div class="mb-3 pb-2 border-bottom" *ngFor="let ev of recentEvents">
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <span class="badge" [ngClass]="{
+                    'bg-primary': ev.action === 'UPLOADED',
+                    'bg-info text-dark': ev.action === 'TRANSFERRED',
+                    'bg-success': ev.action === 'ANALYZED',
+                    'bg-secondary': ev.action === 'VIEWED' || ev.action === 'DOWNLOADED',
+                    'bg-danger': ev.action === 'INTEGRITY_ALERT' || ev.action === 'DISPOSED'
+                  }">{{ ev.action }}</span>
+                  <small class="text-muted">{{ ev.timestamp | date:'shortTime' }}</small>
+                </div>
+                <div class="small fw-semibold text-dark">{{ ev.actorId }}</div>
+                <div class="small text-muted text-truncate" style="max-width: 260px;" [title]="ev.notes">
+                  {{ ev.notes }}
+                </div>
+                <div class="font-monospace text-muted mt-1" style="font-size: 0.7rem;">
+                  Hash: {{ ev.eventHash?.substring(0, 16) }}...
+                </div>
+              </div>
+            </div>
+            <div *ngIf="recentEvents.length === 0" class="text-center text-muted py-4">
+              <i class="bi bi-journal-text fs-2 d-block mb-2"></i>
+              No recent custody events found.
+            </div>
+          </div>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="card bg-light border-0 shadow-sm rounded-3 p-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-shield-shaded fs-2 text-primary me-3"></i>
+            <div>
+              <div class="fw-bold small">Cryptographic Assurance</div>
+              <div class="text-muted" style="font-size: 0.75rem;">
+                All ledger records are cryptographically anchored using SHA-256 hash chains. Mutations break subsequent blocks.
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </section>
+
+</main>

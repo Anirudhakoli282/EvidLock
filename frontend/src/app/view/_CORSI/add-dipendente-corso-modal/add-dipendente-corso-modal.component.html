@@ -1,0 +1,23 @@
+<div class="modal-header">
+  <h4 class="modal-title">Aggiungi Dipendenti</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+<div class="modal-body">
+  <form class="row g-3" novalidate>
+
+    <div class="col-12">
+      <ng-multiselect-dropdown class="custom-multiselect" [placeholder]="'Seleziona dipendenti'" [settings]="dropdownSettings"
+        [data]="dropdownList" [(ngModel)]="selectedItems" [ngModelOptions]="{ standalone: true }" (onSelect)="onItemSelect($event)"
+        (onSelectAll)="onSelectAll($event)">
+      </ng-multiselect-dropdown>
+    </div>
+  </form><!-- End Angular Reactive Form Validation -->
+
+  <div class="modal-footer mt-3">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancel click')">Chiudi</button>
+    <button type="button" class="btn btn-primary" (click)="submit()">Salva</button>
+  </div>
+</div>

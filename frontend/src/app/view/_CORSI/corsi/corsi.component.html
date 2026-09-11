@@ -1,0 +1,27 @@
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Corsi</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+        <li class="breadcrumb-item active">Corsi</li>
+      </ol>
+    </nav>
+  </div>
+  <div class="margin">
+    
+    <div class="mb-3" *ngIf="this.auth.getRole()=='C'">
+      <button type="button" class="btn btn-primary" (click)="openAddCorsoModal()">
+        Aggiungi Corso
+      </button>
+    </div>
+
+    <app-alert [page]="'Corsi'"></app-alert>
+
+  </div>
+
+  <div class="row row-cols-1 row-cols-md-2 row-cols-xxl-3 g-4" *ngIf="corsi && corsi.length>0">
+    <app-corsi-card *ngFor="let corso of corsi" [corso]="corso"></app-corsi-card>
+  </div>
+  <app-no-data *ngIf="corsi && corsi.length === 0" ></app-no-data>
+</main>

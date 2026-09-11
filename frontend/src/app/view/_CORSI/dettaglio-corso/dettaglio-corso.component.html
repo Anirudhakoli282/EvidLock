@@ -1,0 +1,166 @@
+<main id="main" class="main">
+    <div class="pagetitle">
+        <h1>Dettaglio corso</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a routerLink="/corsi">Corsi</a></li>
+                <li class="breadcrumb-item active">Dettagli corso</li>
+            </ol>
+        </nav>
+
+    </div><!-- End Page Title -->
+
+    <div class="margin">
+
+        <div class="mb-3 d-flex gap-2" *ngIf="this.auth.getRole()=='C'">
+            <button type="button" class="btn btn-primary" (click)="openUpdateCorsoModal()">
+                Modifica Corso
+            </button>
+
+            <button (click)="openDeleteCorso()" type="button" class="btn btn-danger" data-bs-toggle="modal">
+                Elimina Corso
+            </button>
+        </div>
+
+        <app-alert [page]="'Corsi'"></app-alert>
+
+    </div>
+
+
+    <section *ngIf="corso != undefined">
+        <div class="row">
+            <div class="col col-lg-12 mb-4">
+                <div class="card mb-0" style="border-radius: .5rem;">
+                    <div class="col">
+                        <div class="row g-0">
+                            <div class="col-md-4 gradient-custom text-center text-white d-flex flex-column align-items-center justify-content-center"
+                                style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+
+
+                                <div *ngIf="corso.categoria=='Benessere'">
+                                    <i class="big-icon bi bi-heart"></i>
+                                </div>
+                                <div *ngIf="corso.categoria=='Formazione'">
+                                    <i class="big-icon bi bi-book"></i>
+                                </div>
+                                <div *ngIf="corso.categoria=='Aggiornamento'">
+                                    <i class="big-icon bi bi-arrow-clockwise"></i>
+                                </div>
+                                <div *ngIf="corso.categoria=='Lingua'">
+                                    <i class="big-icon bi bi-translate"></i>
+                                </div>
+                                <div *ngIf="corso.categoria=='Marketing'">
+                                    <i class="big-icon bi bi-graph-up"></i>
+                                </div>
+                                <div *ngIf="corso.categoria=='Sicurezza'">
+                                    <i class="big-icon bi bi-shield-check"></i>
+                                </div>
+                                <div *ngIf="corso.categoria=='Altro'">
+                                    <i class="big-icon bi bi-three-dots"></i>
+                                </div>
+
+
+                                <h5>{{corso.nome}}</h5>
+                                <p>{{corso.categoria}}</p>
+                                <i class="far fa-edit mb-5"></i>
+                            </div>
+
+                            <div class="col-md-8">
+                                <div class="card-body p-4">
+                                    <h6 class="text-bold">Dettagli Corso</h6>
+                                    <hr class="mt-0 mb-4">
+
+                                    <div class="row pt-1">
+                                        <div class="col-6 mb-3">
+                                            <h6 class="text-bold">Prezzo</h6>
+                                            <p class="text-muted">{{corso.prezzo}}€</p>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <h6 class="text-bold">Durata</h6>
+                                            <p class="text-muted">{{corso.durata}} h</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row pt-1">
+                                        <div class="col-6 mb-3">
+                                            <h6 class="text-bold">Posti Totali</h6>
+                                            <p class="text-muted">{{corso.posti}}</p>
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <h6 class="text-bold">Posti Disponibili </h6>
+                                            <p class="text-muted">{{corso.postiDisponibili}}</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="row pt-1">
+                                        <div class="col-6 mb-3">
+                                            <h6 class="text-bold">Esame Finale</h6>
+                                            <p *ngIf="corso.esameFinale" class="text-muted">Si</p>
+                                            <p *ngIf="!corso.esameFinale" class="text-muted">No</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-12 mb-3">
+                <div class="card mb-0" style="border-radius: .5rem;">
+                    <div class="col">
+                        <div class="row g-0">
+                            <div class="col-md-12">
+                                <div class="card-body p-4">
+                                    <h6 class="text-bold">Descrizione</h6>
+                                    <hr class="mt-0 mb-4">
+                                    <div class="row pt-1">
+                                        <div class="col-12 mb-2">
+                                            <p class="text-muted">{{corso.descrizione}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </section>
+
+    <section>
+
+        <div class="pagetitle" style="padding-top: 25px ;">
+            <h1>Dipendenti Iscritti</h1>
+        </div>
+        <div>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a routerLink="/corsi">Corsi</a></li>
+                    <li class="breadcrumb-item active">Dipendenti Iscritti</li>
+                </ol>
+            </nav>
+            <div class="margin">
+                <div class="mb-3">
+                    <button *ngIf="this.auth.getRole()=='A'" type="button" class="btn btn-primary"
+                        (click)="openAddDipendentiCorso()">
+                        Aggiungi Dipendenti
+                    </button>
+                </div>
+
+                <app-alert [page]="'Corsi'"></app-alert>
+
+            </div>
+
+            <app-dipendenti-tabella *ngIf="dipendentiIscritti && dipendentiIscritti.length>0 && isInitialized"
+                [dipendenti]="dipendentiIscritti"></app-dipendenti-tabella>
+
+        </div>
+    </section>
+</main>

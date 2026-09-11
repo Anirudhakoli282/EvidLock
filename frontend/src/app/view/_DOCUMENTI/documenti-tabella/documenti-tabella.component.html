@@ -1,0 +1,149 @@
+<!-- Critical Integrity Alert Banner -->
+<div *ngIf="integrityAlertMessage" class="alert alert-danger alert-dismissible fade show shadow-sm border-danger" role="alert">
+  <div class="d-flex align-items-center">
+    <i class="bi bi-shield-slash-fill fs-3 text-danger me-3"></i>
+    <div>
+      <h6 class="alert-heading fw-bold mb-1">INTEGRITY COMPROMISED / TAMPER DETECTED</h6>
+      <p class="mb-0">{{ integrityAlertMessage }}</p>
+    </div>
+  </div>
+  <button type="button" class="btn-close" (click)="integrityAlertMessage = ''" aria-label="Close"></button>
+</div>
+
+<div class="card shadow-sm border-0">
+  <div class="card-body p-0">
+    <div class="table-responsive">
+      <table class="table align-middle table-hover mb-0" mat-table [dataSource]="dataSource" matSort>
+
+        <!-- Evidence Tag -->
+        <ng-container matColumnDef="evidenceTag">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="ps-3 text-uppercase text-secondary" style="font-size: 0.78rem;"> Tag / ID </th>
+          <td mat-cell *matCellDef="let row" class="ps-3">
+            <div class="d-flex align-items-center">
+              <span class="badge bg-light text-primary border p-2 me-2">
+                <i class="bi bi-shield-shaded"></i>
+              </span>
+              <div>
+                <a type="button" class="fw-bold text-dark text-decoration-none" (click)="openLedgerModal(row)">
+                  {{ row.evidenceTag }}
+                </a>
+                <div class="text-muted small">#{{ row.id }}</div>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Case Number -->
+        <ng-container matColumnDef="caseNumber">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-uppercase text-secondary" style="font-size: 0.78rem;"> Case </th>
+          <td mat-cell *matCellDef="let row">
+            <span class="badge bg-secondary-subtle text-dark border font-monospace">
+              {{ row.caseNumber || ('Case #' + row.caseId) }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Description -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-uppercase text-secondary" style="font-size: 0.78rem;"> Description </th>
+          <td mat-cell *matCellDef="let row" style="max-width: 250px;">
+            <div class="text-truncate text-dark small" [title]="row.description">
+              {{ row.description }}
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- Custodian -->
+        <ng-container matColumnDef="currentCustodianId">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-uppercase text-secondary" style="font-size: 0.78rem;"> Current Custodian </th>
+          <td mat-cell *matCellDef="let row">
+            <div class="d-flex align-items-center small">
+              <i class="bi bi-person-fill text-muted me-1"></i>
+              <span class="text-secondary">{{ row.currentCustodianId }}</span>
+            </div>
+          </td>
+        </ng-container>
+
+        <!-- SHA-256 Hash -->
+        <ng-container matColumnDef="fileHash">
+          <th mat-header-cell *matHeaderCellDef class="text-uppercase text-secondary" style="font-size: 0.78rem;"> SHA-256 Checksum </th>
+          <td mat-cell *matCellDef="let row">
+            <span class="font-monospace text-muted bg-light border px-2 py-1 rounded small" style="font-size: 0.75rem;" [title]="row.fileHash">
+              {{ row.fileHash?.substring(0, 12) }}...
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Retention Date -->
+        <ng-container matColumnDef="retentionDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-uppercase text-secondary" style="font-size: 0.78rem;"> Retention </th>
+          <td mat-cell *matCellDef="let row">
+            <span class="small text-secondary">
+              <i class="bi bi-calendar-event me-1"></i>{{ row.retentionDate || 'N/A' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Legal Hold Status -->
+        <ng-container matColumnDef="legalHold">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-uppercase text-secondary text-center" style="font-size: 0.78rem;"> Legal Hold </th>
+          <td mat-cell *matCellDef="let row" class="text-center">
+            <button class="btn btn-sm py-1 px-2 border" [ngClass]="row.legalHold ? 'btn-danger' : 'btn-light text-muted'" (click)="toggleLegalHold(row)" [disabled]="auth.isReadOnly()" [title]="row.legalHold ? 'Legal Hold Active: Deletion and alteration blocked' : 'No legal hold active: Click to place legal hold'">
+              <i class="bi" [ngClass]="row.legalHold ? 'bi-lock-fill me-1' : 'bi-unlock me-1'"></i>
+              <span class="fw-semibold" style="font-size: 0.75rem;">{{ row.legalHold ? 'LOCKED' : 'OPEN' }}</span>
+            </button>
+          </td>
+        </ng-container>
+
+        <!-- Integrity Status -->
+        <ng-container matColumnDef="integrityStatus">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header class="text-uppercase text-secondary text-center" style="font-size: 0.78rem;"> Integrity </th>
+          <td mat-cell *matCellDef="let row" class="text-center">
+            <span class="badge rounded-pill" [ngClass]="row.integrityStatus === 'COMPROMISED' ? 'bg-danger' : 'bg-success'">
+              <i class="bi" [ngClass]="row.integrityStatus === 'COMPROMISED' ? 'bi-shield-exclamation' : 'bi-shield-check'"></i>
+              {{ row.integrityStatus === 'COMPROMISED' ? 'COMPROMISED' : 'SECURE' }}
+            </span>
+          </td>
+        </ng-container>
+
+        <!-- Actions -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef class="text-uppercase text-secondary text-end pe-3" style="font-size: 0.78rem;"> Actions </th>
+          <td mat-cell *matCellDef="let row" class="text-end pe-3">
+            <div class="btn-group btn-group-sm">
+              <!-- View Chain / Ledger -->
+              <button class="btn btn-outline-primary" (click)="openLedgerModal(row)" title="View Cryptographic Ledger & Verify Chain">
+                <i class="bi bi-link-45deg"></i> Ledger
+              </button>
+
+              <!-- Court-Ready PDF Report -->
+              <button class="btn btn-outline-secondary" (click)="downloadPdfReport(row)" title="Export Court-Ready PDF Report">
+                <i class="bi bi-file-earmark-pdf text-danger"></i> PDF
+              </button>
+
+              <!-- Download Evidence File (with real-time integrity verification) -->
+              <button class="btn btn-outline-secondary" (click)="downloadEvidenceFile(row)" title="Download file (Verifies SHA-256 hash on retrieval)">
+                <i class="bi bi-download text-primary"></i>
+              </button>
+
+              <!-- Transfer Custody -->
+              <button *ngIf="!auth.isReadOnly()" class="btn btn-outline-warning text-dark" (click)="openTransferModal(row)" title="Initiate Dual-Custody Transfer Request">
+                <i class="bi bi-arrow-left-right"></i>
+              </button>
+
+              <!-- Delete (Supervisor only) -->
+              <button *ngIf="auth.isSupervisor()" class="btn btn-outline-danger" (click)="deleteEvidence(row)" [disabled]="row.legalHold" title="Purge Record (Disabled under Legal Hold)">
+                <i class="bi bi-trash"></i>
+              </button>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+
+      <mat-paginator [pageSizeOptions]="[5, 10, 25, 50]" showFirstLastButtons></mat-paginator>
+    </div>
+  </div>
+</div>

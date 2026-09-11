@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="it">
+<head>
+    <meta charset="utf-8">
+    <title>Docufy</title>
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Vendor CSS Files -->
+    <link rel="stylesheet" href="/style.css">
+    <!-- TailWind CSS -->
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="flex items-center min-h-screen bg-gray-100 dark:bg-gray-900">
+    <div class="container mx-auto">
+        <div class="max-w-xl mx-auto my-10 bg-white p-5 rounded-md shadow-sm">
+            <div class="text-center">
+                <h1 class="my-3 text-3xl font-semibold text-gray-700 dark:text-gray-200">
+                    Contattaci
+                </h1>
+                <p class="text-gray-400 dark:text-gray-400">
+                    Compila il modulo sottostante per inviarci un messaggio.
+                </p>
+                <br>
+            </div>
+            <div class="m-7">
+                <form action="https://api.web3forms.com/submit" method="POST" id="form" class="needs-validation" novalidate>
+                    <input type="hidden" name="access_key" value="1b394588-7402-439f-95a8-0cba7d5bc80e" />
+                    <input type="hidden" name="subject" value="Nuova Segnalazione da Web3Forms" />
+                    <input type="checkbox" name="botcheck" id="" style="display: none;" />
+
+                    <div class="flex mb-6 space-x-4">
+                        <div class="w-full md:w-1/2">
+                            <label for="fname" class="block mb-2 text-sm text-gray-600 dark:text-gray-400">Nome</label>
+                            <input type="text" name="name" id="first_name" placeholder="Mario" required class="w-full px-3 py-2 placeholder-gray-300 border-2 border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300" />
+                            <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+                                Si prega di fornire il tuo nome.
+                            </div>
+                        </div>
+                        <div class="w-full md:w-1/2">
+                            <label for="lname" class="block mb-2 text-sm text-gray-600 dark:text-gray-400">Cognome</label>
+                            <input type="text" name="last_name" id="lname" placeholder="Rossi" required class="w-full px-3 py-2 placeholder-gray-300 border-2 border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300" />
+                            <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+                                Si prega di fornire il tuo cognome.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex mb-6 space-x-4">
+                        <div class="w-full md:w-1/2">
+                            <label for="email" class="block mb-2 text-sm text-gray-600 dark:text-gray-400">Indirizzo Email</label>
+                            <input type="email" name="email" id="email" placeholder="email@esempio.com" required class="w-full px-3 py-2 placeholder-gray-300 border-2 border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300" />
+                            <div class="empty-feedback text-red-400 text-sm mt-1">
+                                Si prega di fornire il tuo indirizzo email.
+                            </div>
+                            <div class="invalid-feedback text-red-400 text-sm mt-1">
+                                Si prega di fornire un indirizzo email valido.
+                            </div>
+                        </div>
+
+                        <div class="w-full md:w-1/2">
+                            <label for="phone" class="block text-sm mb-2 text-gray-600 dark:text-gray-400">Numero di Telefono</label>
+                            <input type="text" name="phone" id="phone" placeholder="+39 123 345 6789" required class="w-full px-3 py-2 placeholder-gray-300 border-2 border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300" />
+
+                            <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+                                Si prega di fornire il tuo numero di telefono.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label for="message" class="block mb-2 text-sm text-gray-600 dark:text-gray-400">Il Tuo Messaggio</label>
+
+                        <textarea rows="5" name="message" id="message" placeholder="Il Tuo Messaggio" class="w-full px-3 py-2 placeholder-gray-300 border-2 border-gray-200 rounded-md focus:outline-none focus:ring focus:ring-indigo-100 focus:border-indigo-300" required></textarea>
+                        <div class="empty-feedback invalid-feedback text-red-400 text-sm mt-1">
+                            Si prega di inserire il tuo messaggio.
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <button type="submit" class="w-full px-3 py-4 text-white bg-indigo-500 rounded-md focus:bg-indigo-600 focus:outline-none">
+                            Invia Messaggio
+                        </button>
+                    </div>
+                    <p class="text-base text-center text-gray-400" id="result"></p>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Vendor JS Files -->
+<script src="/script.js"></script>
+
+</body>
+
+<footer id="footer" class="footer flex flex-col items-center justify-center">
+    <div class="copyright mb-2"> <!-- Aggiunto mb-2 per aggiungere uno spazio tra i due div -->
+        <a href="/contact.html"> &copy;Copyright</a><strong><span> Docufy</span></strong>. Tutti i diritti riservati
+    </div>
+
+    <div class="credits">
+        <p>Sito realizzato con passione da: <strong>Campanella Gianluca</strong>, <strong>Curcio Daniel</strong>,<br>
+            <strong>Falvo Caterina</strong> e <strong>Gattuso Pietro</strong></p>
+    </div>
+</footer><!-- End Footer -->
+
+
+</html>

@@ -1,0 +1,67 @@
+<aside id="sidebar" class="sidebar">
+
+  <ul class="sidebar-nav" id="sidebar-nav">
+
+    <li class="nav-item">
+      <a class="nav-link" routerLink="/">
+        <i class="bi bi-speedometer2 text-primary"></i>
+        <span>Dashboard</span>
+      </a>
+    </li><!-- End Dashboard Nav -->
+
+    <li class="nav-heading">Evidence & Operations</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="/documenti">
+        <i class="bi bi-shield-lock-fill text-warning"></i>
+        <span>Evidence Vault</span>
+      </a>
+    </li><!-- End Evidence Vault Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="/aziende">
+        <i class="bi bi-building"></i>
+        <span>Agencies & Offices</span>
+      </a>
+    </li><!-- End Agencies Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="/dipendenti">
+        <i class="bi bi-people-fill text-info"></i>
+        <span>Custodians & Officers</span>
+      </a>
+    </li><!-- End Officers Nav -->
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="/corsi">
+        <i class="bi bi-award-fill text-success"></i>
+        <span>Forensic Certifications</span>
+      </a>
+    </li><!-- End Training Nav -->
+
+    <li class="nav-heading">System</li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="/profile">
+        <i class="bi bi-person-badge"></i>
+        <span>Officer Profile</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed" routerLink="/question">
+        <i class="bi bi-question-circle"></i>
+        <span>Audit FAQ</span>
+      </a>
+    </li>
+
+    <li class="nav-item">
+      <a class="nav-link collapsed text-danger" type="button" (click)="logout()">
+        <i class="bi bi-box-arrow-right text-danger"></i>
+        <span>Sign Out</span>
+      </a>
+    </li>
+
+  </ul>
+
+</aside><!-- End Sidebar-->

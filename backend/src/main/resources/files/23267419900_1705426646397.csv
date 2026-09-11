@@ -1,0 +1,10 @@
+CF,Nome,Cognome,DataNascita,Email,Telefono,Residenza,DataAssunzione,Ruolo
+FBBRNO22F28H502B,Bruno,Fabbri,1994-08-15,bruno.fabbri@gmail.com,02233456789,via Milano,2022-05-12,OperatoreLogistico
+PLNTRI23M33H503C,Claudio,Pelletti,1989-02-12,claudio.pelletti@gmail.com,02233456788,via Venezia,2021-09-18,Analista
+MCCNNE24F25H504D,Diana,Maccioni,1997-05-20,diana.maccioni@gmail.com,02233456787,via Firenze,2024-01-05,AssistenteTecnico
+MRGRNO25M31H505E,Elena,Marrone,1990-10-22,elena.marrone@gmail.com,02233456786,via Genova,2023-07-09,IngegnereMeccanico
+PRDNTI26M36H506F,Fabio,Paradiso,1986-12-18,fabio.paradiso@gmail.com,02233456785,via Bologna,2020-02-22,Manager
+PLSRNO27F23H507G,Giovanni,Poli,1999-11-08,giovanni.poli@gmail.com,02233456784,via Palermo,2022-11-15,AnalistaFinanziario
+FNTLIA28F30H508H,Hugo,Fantilia,1993-03-17,hugo.fantilia@gmail.com,02233456783,via Torino,2020-10-30,Progettista
+SMLGNI29M26H509I,Irene,Samalini,1995-09-22,irene.samalini@gmail.com,02233456782,via Verona,2023-04-14,TecnicoManutentore
+PSCNNE30F29H510J,Jack,Pescatore,1991-02-04,jack.pescatore@gmail.com,02233456781,via Napoli,2022-01-28,AssistenteAmministrativo

@@ -1,0 +1,122 @@
+<div class="modal-header">
+    <h4 class="modal-title">Aggiungi Nuovo Dipendente</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <!-- Contenuto del tuo modulo -->
+    <!-- Angular Reactive Form Validation -->
+    <form [formGroup]="addDipendenteForm" class="row g-3" (ngSubmit)="submitForm()" novalidate>
+        <div class="col-md-6">
+            <label for="nome" class="form-label">Nome*</label>
+            <input formControlName="nome" type="text" class="form-control"
+                [class.is-invalid]="addDipendenteForm.get('nome')?.invalid && addDipendenteForm.get('nome')?.touched">
+            <div *ngIf="addDipendenteForm.get('nome')?.invalid && addDipendenteForm.get('nome')?.touched"
+                class="invalid-feedback">
+                Nome è obbligatorio<p *ngIf="addDipendenteForm.get('nome')?.hasError('invalidName')" >Il nome non può contenere numeri.</p>
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+            <label for="cognome" class="form-label">Cognome*</label>
+            <input formControlName="cognome" type="text" class="form-control"
+                [class.is-invalid]="addDipendenteForm.get('cognome')?.invalid && addDipendenteForm.get('cognome')?.touched">
+            <div *ngIf="addDipendenteForm.get('cognome')?.invalid && addDipendenteForm.get('cognome')?.touched"
+                class="invalid-feedback">
+                Cognome è obbligatorio<p *ngIf="addDipendenteForm.get('cognome')?.hasError('invalidSurname')" >Il cognome non può contenere numeri.</p>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="dataNascita" class="form-label">Data di Nascita*</label>
+            <div class="input-group">
+                <input readonly formControlName="dataNascita" class="form-control" ngbDatepicker #dpNascita="ngbDatepicker"
+                    placeholder="gg-mm-aaaa" [minDate]="minDate"
+                    [class.is-invalid]="addDipendenteForm.get('dataNascita')?.invalid && addDipendenteForm.get('dataNascita')?.touched"/>
+                <button class="btn btn-outline-secondary bi bi-calendar3" (click)="dpNascita.toggle()"
+                    type="button"></button>
+                <div *ngIf="addDipendenteForm.get('dataNascita')?.invalid && addDipendenteForm.get('dataNascita')?.touched"
+                    class="invalid-feedback">
+                 L'età deve essere di almeno 18 anni.
+               </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="dataAssunzione" class="form-label">Data di Assunzione*</label>
+            <div class="input-group">
+                <input readonly formControlName="dataAssunzione" class="form-control" ngbDatepicker #dpAssunzione="ngbDatepicker"
+                    placeholder="gg-mm-aaaa" [minDate]="minDate"
+                    [class.is-invalid]="addDipendenteForm.get('dataAssunzione')?.invalid && addDipendenteForm.get('dataAssunzione')?.touched"/>
+                <button class="btn btn-outline-secondary bi bi-calendar3" (click)="dpAssunzione.toggle()"
+                    type="button"></button>
+                <div *ngIf="addDipendenteForm.get('dataAssunzione')?.invalid && addDipendenteForm.get('dataAssunzione')?.touched"
+                    class="invalid-feedback">
+                 Data di assunzione non valida.
+               </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="cf" class="form-label">Codice Fiscale*</label>
+            <input formControlName="cf" type="text" class="form-control"
+                [class.is-invalid]="addDipendenteForm.get('cf')?.invalid && addDipendenteForm.get('cf')?.touched">
+            <div *ngIf="addDipendenteForm.get('cf')?.invalid && addDipendenteForm.get('cf')?.touched"
+                class="invalid-feedback">
+                Codice Fiscale non valido
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="ruolo" class="form-label">Ruolo*</label>
+            <input formControlName="ruolo" type="text" class="form-control"
+                [class.is-invalid]="addDipendenteForm.get('ruolo')?.invalid && addDipendenteForm.get('ruolo')?.touched">
+            <div *ngIf="addDipendenteForm.get('ruolo')?.invalid && addDipendenteForm.get('ruolo')?.touched"
+                class="invalid-feedback">
+                Ruolo non valido
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <label for="email" class="form-label">Email*</label>
+            <input formControlName="email" type="email" class="form-control"
+                [class.is-invalid]="addDipendenteForm.get('email')?.invalid && addDipendenteForm.get('email')?.touched">
+            <div *ngIf="addDipendenteForm.get('email')?.invalid && addDipendenteForm.get('email')?.touched"
+                class="invalid-feedback">
+                Email è obbligatoria e deve essere valida
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="residenza" class="form-label">Residenza</label>
+            <input formControlName="residenza" type="text" class="form-control">
+        </div>
+
+        <div class="col-md-6">
+            <label for="telefono" class="form-label">Telefono</label>
+            <input formControlName="telefono" type="text" class="form-control"
+            [class.is-invalid]="addDipendenteForm.get('telefono')?.invalid && addDipendenteForm.get('telefono')?.touched">
+            <div *ngIf="addDipendenteForm.get('telefono')?.invalid && addDipendenteForm.get('telefono')?.touched"
+                class="invalid-feedback">
+                Telefono non valido
+            </div>
+        </div>
+
+        <!-- Carica file -->
+        <div class="col-md-12">
+            <label for="img" class="form-label">Carica Immagine</label>
+            <input formControlName="img" type="file" class="form-control" id="file"
+                [class.is-invalid]="addDipendenteForm.get('img')?.invalid && addDipendenteForm.get('img')?.touched"
+                accept="image/*" (change)="onFileSelected($event)">
+        </div>
+
+    </form><!-- End Angular Reactive Form Validation -->
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancel click')">Chiudi</button>
+    <button type="button" class="btn btn-primary" [disabled]="addDipendenteForm.invalid"
+        (click)="submitForm()">Salva</button>
+</div>

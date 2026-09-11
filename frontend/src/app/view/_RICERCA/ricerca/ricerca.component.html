@@ -1,0 +1,47 @@
+<div id="main" class="main ">
+
+    <!-- Aziende -->
+    <div *ngIf="aziende && aziende.length>0 && aziendeInitialized">
+        <div class="pagetitle">
+            <h1>Aziende</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Aziende</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+        <app-aziende-tabella [aziende]="aziende"></app-aziende-tabella>
+    </div>
+
+    <!-- Documenti -->
+    <div *ngIf="documenti && documenti.length>0">
+
+        <div class="pagetitle">
+            <h1>Documenti</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Documenti</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+        <app-documenti-tabella [documenti]="documenti" [displayDipendente]="true"></app-documenti-tabella>
+    </div>
+
+    <!-- Dipendenti -->
+    <div *ngIf="dipendenti && dipendenti.length>0 && dipendentiInitialized">
+
+        <div class="pagetitle">
+            <h1>Dipendenti</h1>
+            <nav>
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Dipendenti</li>
+                </ol>
+            </nav>
+        </div><!-- End Page Title -->
+        <app-dipendenti-tabella [dipendenti]="dipendenti"></app-dipendenti-tabella>
+    </div>
+
+</div>

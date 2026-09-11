@@ -1,0 +1,243 @@
+<main id="main" class="main">
+  <div class="pagetitle">
+    <h1>Profilo</h1>
+    <nav>
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+        <li class="breadcrumb-item active">Profilo</li>
+      </ol>
+    </nav>
+  </div><!-- End Page Title -->
+
+  <section class="section profile" *ngIf="azienda">
+    <div class="row">
+
+      <app-alert [page]="'Profilo'"></app-alert>
+
+      <div class="col-xl-4">
+
+        <div class="card" *ngIf="azienda!=null && isInitialized">
+          <div class="card-body profile-card pt-4 d-flex flex-column align-items-center">
+
+            <ng-container *ngIf="azienda.img && azienda.img.startsWith('blob'); else defaultImg">
+              <img [src]="azienda.img" alt="" style="width: 100px; height: 100px" class="rounded-circle" />
+            </ng-container>
+
+            <ng-template #defaultImg>
+              <img
+                src="https://cdn4.iconfinder.com/data/icons/basic-flat-ui-extra-set-200-item/76/ui_ux_minimalist_button_office_building_headquarter-512.png"
+                alt="" style="width: 100px; height: 100px" class="rounded-circle" />
+            </ng-template>
+
+            <h2>{{azienda.ragioneSociale}}</h2>
+            <h3>{{azienda.piva}}</h3>
+          </div>
+        </div>
+
+        <div class="pt-2 d-flex justify-content-center mb-4"> <!-- Center-align the buttons with added spacing -->
+          <label for="file-upload" class="btn btn-primary btn-sm me-2" title="Carica nuova immagine profilo">
+            <i class="bi bi-upload"></i> Carica immagine
+          </label>
+          <input type="file" id="file-upload" style="display: none;" accept="image/*"
+            (change)="onFileSelected($event)" />
+
+          <button class="btn btn-danger btn-sm ms-2" title="Rimuovi immagine profilo" (click)="openDeleteImg()"
+            [disabled]="azienda.img === '' || azienda.img === null">
+            <i class="bi bi-trash"></i> Elimina immagine
+          </button>
+        </div>
+
+
+
+      </div>
+
+
+      <div class="col-xl-8">
+
+        <div class="card" *ngIf="azienda!=null">
+          <div class="card-body pt-3">
+            <!-- Bordered Tabs -->
+            <ul class="nav nav-tabs nav-tabs-bordered">
+
+              <li class="nav-item">
+                <button class="nav-link active" data-bs-toggle="tab"
+                  data-bs-target="#profile-overview">Dettagli</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab" data-bs-target="#profile-edit">Modifica Profilo</button>
+              </li>
+
+              <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="tab"
+                  data-bs-target="#profile-change-password">Password</button>
+              </li>
+
+            </ul>
+            <div class="tab-content pt-2">
+
+              <div class="tab-pane fade show active profile-overview" id="profile-overview">
+                <h5 class="card-title">Dettagli Azienda</h5>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Ragione Sociale</div>
+                  <div class="col-lg-9 col-md-8">{{azienda.ragioneSociale}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Partita IVA</div>
+                  <div class="col-lg-9 col-md-8">{{azienda.piva}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Email</div>
+                  <div class="col-lg-9 col-md-8">{{azienda.email}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Indirizzo</div>
+                  <div class="col-lg-9 col-md-8">{{azienda.indirizzo}}</div>
+                </div>
+
+                <div class="row">
+                  <div class="col-lg-3 col-md-4 label">Telefono</div>
+                  <div class="col-lg-9 col-md-8">{{azienda.telefono}}</div>
+                </div>
+
+              </div>
+
+              <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
+
+                <!-- Profile Edit Form -->
+                <form [formGroup]="modificaProfiloForm"> <!--(ngSubmit)="salvaModifiche()"-->
+
+                  <div class="row mb-3">
+                    <label for="company" class="col-md-4 col-lg-3 col-form-label">Ragione Sociale</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="ragioneSociale" type="text" class="form-control"
+                        [class.is-invalid]="modificaProfiloForm.get('ragioneSociale')?.invalid && modificaProfiloForm.get('ragioneSociale')?.touched">
+                      <div
+                        *ngIf="modificaProfiloForm.get('ragioneSociale')?.invalid && modificaProfiloForm.get('ragioneSociale')?.touched"
+                        class="invalid-feedback">
+                        Campo obbligatorio.
+                      </div>
+
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="Email" class="col-md-4 col-lg-3 col-form-label">Email</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="email" name="email" type="email" class="form-control" id="Email"
+                        [class.is-invalid]="modificaProfiloForm.get('email')?.invalid && modificaProfiloForm.get('email')?.touched">
+                      <!--value={{azienda.email}}-->
+                      <div
+                        *ngIf="modificaProfiloForm.get('email')?.invalid && modificaProfiloForm.get('email')?.touched"
+                        class="invalid-feedback">
+                        Email non valida
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="Address" class="col-md-4 col-lg-3 col-form-label">Indirizzo</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="indirizzo" name="address" type="text" class="form-control" id="Address"
+                        [class.is-invalid]="modificaProfiloForm.get('indirizzo')?.invalid && modificaProfiloForm.get('indirizzo')?.touched">
+                      <!--value={{azienda.indirizzo}}-->
+                      <div
+                        *ngIf="modificaProfiloForm.get('indirizzo')?.invalid && modificaProfiloForm.get('indirizzo')?.touched"
+                        class="invalid-feedback">
+                        Indirizzo non valido</div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="Phone" class="col-md-4 col-lg-3 col-form-label">Telefono</label>
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="telefono" name="text" type="text" class="form-control" id="Phone"
+                        [class.is-invalid]="modificaProfiloForm.get('telefono')?.invalid && modificaProfiloForm.get('telefono')?.touched">
+                      <!--value={{azienda.telefono}}-->
+                      <div
+                        *ngIf="modificaProfiloForm.get('telefono')?.invalid && modificaProfiloForm.get('telefono')?.touched"
+                        class="invalid-feedback">
+                        Telefono non valido
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary" [disabled]="modificaProfiloForm.invalid"
+                      (click)="salvaModifiche()">Salva
+                      cambiamenti</button> <!-- abilita il bottone solo quando qualche label è stat modificata-->
+                  </div>
+                </form><!-- End Profile Edit Form -->
+
+              </div>
+
+              <div class="tab-pane fade pt-3" id="profile-change-password">
+                <!-- CHANGE PASSWORD FORM -->
+                <form [formGroup]="modificaPasswordForm" novalidate>
+
+                  <div class="row mb-3">
+                    <label for="currentPassword" class="col-md-4 col-lg-3 col-form-label">Password Attuale</label>
+                    <!--confronto con la veccia password-->
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="password" name="password" type="password" class="form-control"
+                        id="currentPassword"
+                        [class.is-invalid]="modificaPasswordForm.get('password')?.invalid && modificaPasswordForm.get('password')?.touched">
+                      <div
+                        *ngIf="modificaPasswordForm.get('password')?.invalid && modificaPasswordForm.get('password')?.touched"
+                        class="invalid-feedback">
+                        Vecchia password obbligatoria.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="newPassword" class="col-md-4 col-lg-3 col-form-label">Nuova
+                      Password</label><!--confronto con la vecchia password e con tutti i controlli generali sulla password-->
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="nuovaPassword" name="newpassword" type="password" class="form-control"
+                        id="newPassword"
+                        [class.is-invalid]="modificaPasswordForm.get('nuovaPassword')?.invalid && modificaPasswordForm.get('nuovaPassword')?.touched">
+                      <div
+                        *ngIf="modificaPasswordForm.get('nuovaPassword')?.invalid && modificaPasswordForm.get('nuovaPassword')?.touched"
+                        class="invalid-feedback">
+                        La password deve contenere almeno 8 caratteri, una lettera maiuscola, una minuscola, un numero e
+                        un carattere speciale.
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="row mb-3">
+                    <label for="renewPassword" class="col-md-4 col-lg-3 col-form-label">Conferma Password</label>
+                    <!--confronto le deu password-->
+                    <div class="col-md-8 col-lg-9">
+                      <input formControlName="confermaPassword" name="renewpassword" type="password"
+                        class="form-control" id="renewPassword"
+                        [class.is-invalid]="modificaPasswordForm.get('confermaPassword')?.invalid && modificaPasswordForm.get('confermaPassword')?.touched">
+                      <div
+                        *ngIf="modificaPasswordForm.get('confermaPassword')?.invalid && modificaPasswordForm.get('confermaPassword')?.touched"
+                        class="invalid-feedback"> Le password non corrispondono.</div>
+                    </div>
+                  </div>
+
+                  <div class="text-center">
+                    <button type="submit" class="btn btn-primary" [disabled]="modificaPasswordForm.invalid"
+                      (click)="modificaPassword()">Cambia Password</button>
+                  </div>
+
+                </form><!-- End Change Password Form -->
+              </div>
+
+            </div><!-- End Bordered Tabs -->
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+</main>

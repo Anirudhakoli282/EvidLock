@@ -1,0 +1,75 @@
+<div class="modal-header bg-navy text-white d-flex justify-content-between align-items-center" style="background-color: #0f2043;">
+  <div>
+    <h5 class="modal-title fw-bold text-white mb-0">
+      <i class="bi bi-shield-plus text-primary me-2"></i>Ingest New Digital Evidence Item
+    </h5>
+    <small class="text-white-50">Computes initial SHA-256 file hash & appends Genesis Block to Ledger</small>
+  </div>
+  <button type="button" class="btn-close btn-close-white" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body p-4 bg-light">
+  <!-- Alerts -->
+  <div *ngIf="errorMessage" class="alert alert-danger d-flex align-items-center py-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+    <div>{{ errorMessage }}</div>
+  </div>
+
+  <form [formGroup]="evidenceForm" (ngSubmit)="submit()">
+    <!-- Case Selection -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Associated Case <span class="text-danger">*</span></label>
+      <select class="form-select" formControlName="caseId" [class.is-invalid]="evidenceForm.get('caseId')?.touched && evidenceForm.get('caseId')?.invalid">
+        <option value="" disabled selected>Select an active case...</option>
+        <option *ngFor="let c of cases" [value]="c.id">
+          {{ c.caseNumber }}: {{ c.title }} ({{ c.status }})
+        </option>
+      </select>
+      <div class="invalid-feedback">A case must be associated with the evidence.</div>
+    </div>
+
+    <!-- Evidence Tag -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Evidence Tracking Tag <span class="text-danger">*</span></label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
+        <input type="text" class="form-control" formControlName="evidenceTag" placeholder="e.g. EVD-2024-005" [class.is-invalid]="evidenceForm.get('evidenceTag')?.touched && evidenceForm.get('evidenceTag')?.invalid">
+      </div>
+      <div class="invalid-feedback">Valid evidence tag identifier required (letters, numbers, dash).</div>
+    </div>
+
+    <!-- Description -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Evidence Description & Source <span class="text-danger">*</span></label>
+      <textarea class="form-control" rows="3" formControlName="description" placeholder="e.g., Forensic physical clone of Samsung Galaxy S22 retrieved from suspect vehicle..." [class.is-invalid]="evidenceForm.get('description')?.touched && evidenceForm.get('description')?.invalid"></textarea>
+      <div class="invalid-feedback">Description must be at least 5 characters.</div>
+    </div>
+
+    <!-- Retention Date -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Statutory Retention Expiration Date <span class="text-danger">*</span></label>
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+        <input type="date" class="form-control" formControlName="retentionDate" [class.is-invalid]="evidenceForm.get('retentionDate')?.touched && evidenceForm.get('retentionDate')?.invalid">
+      </div>
+      <small class="text-muted">Evidence cannot be disposed before this date unless legally authorized.</small>
+    </div>
+
+    <!-- Evidence File Upload -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold text-dark">Evidence File / Forensic Image <span class="text-danger">*</span></label>
+      <input type="file" class="form-control" (change)="onFileSelected($event)">
+      <div class="form-text small text-muted">
+        <i class="bi bi-cpu me-1"></i>System will automatically calculate the SHA-256 checksum upon receipt to ensure tamper-evident seal.
+      </div>
+    </div>
+
+    <div class="modal-footer px-0 pb-0 pt-3 bg-light border-0">
+      <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()" [disabled]="loading">Cancel</button>
+      <button type="submit" class="btn btn-primary fw-semibold" [disabled]="evidenceForm.invalid || !selectedFile || loading">
+        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+        <i *ngIf="!loading" class="bi bi-shield-lock-fill me-1"></i>Ingest & Seal Evidence
+      </button>
+    </div>
+  </form>
+</div>

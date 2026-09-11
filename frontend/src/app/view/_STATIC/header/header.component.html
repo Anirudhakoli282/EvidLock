@@ -1,0 +1,118 @@
+<header id="header" class="header fixed-top d-flex align-items-center">
+
+  <div class="d-flex align-items-center justify-content-between">
+    <a routerLink="/" class="logo d-flex align-items-center text-decoration-none">
+      <i class="bi bi-shield-lock-fill fs-3 text-primary me-2"></i>
+      <span class="d-none d-lg-block fw-bold fs-4 text-dark mb-0">Evid<span class="text-primary">Lock</span></span>
+    </a>
+    <i class="bi bi-list toggle-sidebar-btn" (click)="toggleSidebar()"></i>
+  </div><!-- End Logo -->
+
+  <div class="search-bar">
+    <form class="search-form d-flex align-items-center">
+      <input [formControl]="text" type="text" name="query" placeholder="Search evidence, cases, tags..." title="Enter search keyword">
+      <button type="submit" title="Search" (click)="search()"><i class="bi bi-search"></i></button>
+    </form>
+  </div><!-- End Search Bar -->
+
+  <nav class="header-nav ms-auto">
+    <ul class="d-flex align-items-center">
+
+      <!-- Current Role Badge -->
+      <li class="nav-item pe-2" *ngIf="auth.getRole()">
+        <span class="badge py-2 px-3" [ngClass]="{
+          'bg-danger': auth.isSupervisor(),
+          'bg-primary': auth.isInvestigator(),
+          'bg-success': auth.isCustodian(),
+          'bg-warning text-dark': auth.isAuditor()
+        }">
+          <i class="bi me-1" [ngClass]="{
+            'bi-shield-shaded': auth.isSupervisor(),
+            'bi-search': auth.isInvestigator(),
+            'bi-box-seam': auth.isCustodian(),
+            'bi-eye': auth.isAuditor()
+          }"></i>
+          {{ auth.getRole() }}
+          <span *ngIf="auth.isAuditor()"> (READ-ONLY)</span>
+        </span>
+      </li>
+
+      <li class="nav-item d-block d-lg-none">
+        <a class="nav-link nav-icon search-bar-toggle " href="#">
+          <i class="bi bi-search"></i>
+        </a>
+      </li><!-- End Search Icon-->
+
+      <!-- Add combo box for aziende selection -->
+      <li class="nav-item pe-3" *ngIf="!isDashboard && role=='C'">
+        <select class="form-select clear-combo-box" id="aziendaSelect" [(ngModel)]="aziendaSelezionata"
+          (change)="onAziendaChange()">
+          <option value="" disabled selected hidden>Seleziona azienda</option>
+          <option *ngFor="let azienda of aziende" [value]="azienda.ragioneSociale">{{ azienda.ragioneSociale }}</option>
+        </select>
+      </li>
+
+      <a class="nav-link nav-icon" *ngIf="role=='C'">
+        <i class="bi bi-building-fill-check"></i>
+      </a><!-- End Consulente Icon -->
+
+      <li *ngIf="isInitialized" class="nav-item dropdown pe-3">
+
+        <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+
+          <ng-container *ngIf="azienda.img && azienda.img.startsWith('blob'); else defaultImg">
+            <img [src]="azienda.img" alt="" style="width: 40px; height: 40px" class="rounded-circle" />
+          </ng-container>
+
+          <ng-template #defaultImg>
+            <img
+              src="https://cdn4.iconfinder.com/data/icons/basic-flat-ui-extra-set-200-item/76/ui_ux_minimalist_button_office_building_headquarter-512.png"
+              alt="" style="width: 40px; height: 40px" class="rounded-circle" />
+          </ng-template>
+
+          <span *ngIf="azienda != undefined"
+            class="d-none d-md-block dropdown-toggle ps-2">{{azienda.ragioneSociale}}</span>
+        </a><!-- End Profile Iamge Icon -->
+
+        <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+          <li class="dropdown-header">
+            <h6 *ngIf="azienda != undefined">{{azienda.ragioneSociale}}</h6>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center" routerLink="/profile">
+              <i class="bi bi-person"></i>
+              <span>Profilo</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center" routerLink="/question">
+              <i class="bi bi-question-circle"></i>
+              <span>Hai bisogno di aiuto?</span>
+            </a>
+          </li>
+          <li>
+            <hr class="dropdown-divider">
+          </li>
+
+          <li>
+            <a class="dropdown-item d-flex align-items-center" type="button" (click)="logout()">
+              <i class="bi bi-box-arrow-right"></i>
+              <span>Esci</span>
+            </a>
+          </li>
+
+        </ul><!-- End Profile Dropdown Items -->
+      </li><!-- End Profile Nav -->
+
+    </ul>
+  </nav><!-- End Icons Navigation -->
+
+</header><!-- End Header -->

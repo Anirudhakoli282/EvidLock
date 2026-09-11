@@ -1,0 +1,141 @@
+<div id="main" class="main ">
+
+    <div class="pagetitle">
+        <h1>Dipendenti</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a routerLink="/dipendenti">Dipendenti</a></li>
+                <li class="breadcrumb-item active">Dettagli dipendente</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="margin">
+        <div class="mb-3 d-flex gap-2" *ngIf="this.auth.getRole()=='A'">
+            <button (click)="openUpdateDipendente()" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#addEmployeeModal">
+                Modifica dati
+            </button>
+
+            <button *ngIf="isInitialized && dipendente.img != '' " (click)="openDeleteImg()" type="button"
+                class="btn btn-danger" data-bs-toggle="modal">
+                Elimina Immagine
+            </button>
+
+            <button (click)="openDeleteDipendente()" type="button" class="btn btn-danger" data-bs-toggle="modal">
+                Elimina Dipendente
+            </button>
+        </div>
+
+        <app-alert [page]="'Dipendenti'"></app-alert>
+    </div>
+
+    <section *ngIf="isInitialized || dipendente != undefined" class="mb-3">
+        <div class="row">
+            <div class="col col-lg-12 mb-4 mb-lg-0">
+                <div class="card mb-0" style="border-radius: .5rem;">
+                    <div class="row g-0">
+                        <div class="col-md-4 gradient-custom text-center text-white d-flex flex-column align-items-center justify-content-center"
+                            style="border-top-left-radius: .5rem; border-bottom-left-radius: .5rem;">
+
+
+                            <img *ngIf="dipendente.img == '' || dipendente.img == null"
+                                src="https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_960_720.png"
+                                alt="Avatar" class="img-fluid my-5" style="width: 100px;" />
+
+                            <img *ngIf="dipendente.img && !dipendente.img.startsWith('./')" [src]="dipendente.img"
+                                alt="Avatar" class="img-fluid my-5"
+                                style="width: 100px; background-color: lightgray;" />
+
+                            <h5>{{dipendente.cognome}} {{dipendente.nome}}</h5>
+                            <p>{{dipendente.ruolo}}</p>
+                            <i class="far fa-edit mb-5"></i>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="card-body p-4">
+                                <h6 class="text-bold">Dettagli dipendente</h6>
+                                <hr class="mt-0 mb-4">
+
+                                <div class="row pt-1">
+
+                                    <div class="col-6 mb-3">
+                                        <h6 class="text-bold">Email</h6>
+                                        <p class="text-muted">{{dipendente.email}}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6 class="text-bold">Codice Fiscale</h6>
+                                        <p class="text-muted">{{dipendente.cf}}</p>
+                                    </div>
+                                </div>
+
+                                <div class="row pt-1">
+
+                                    <div class="col-6 mb-3">
+                                        <h6 class="text-bold">Data di Nascita</h6>
+                                        <p class="text-muted">{{dataNascitaIT}}</p>
+                                    </div>
+                                    <div class="col-6 mb-3">
+                                        <h6 class="text-bold">Data di Assuznione</h6>
+                                        <p class="text-muted">{{dataAssunzioneIT}}</p>
+                                    </div>
+
+                                </div>
+
+                                <div class="row pt-1">
+
+                                    <div class="col-6 mb-3">
+                                        <h6 class="text-bold">Residenza</h6>
+                                        <p *ngIf="dipendente.residenza != '' " class="text-muted">
+                                            {{dipendente.residenza}}</p>
+                                        <p *ngIf="dipendente.residenza == '' " class="text-muted"><i>Non specificata</i>
+                                        </p>
+                                    </div>
+
+                                    <div class="col-6 mb-3">
+                                        <h6 class="text-bold">Telefono</h6>
+                                        <p *ngIf="dipendente.telefono != '' " class="text-muted">{{dipendente.telefono}}
+                                        </p>
+                                        <p *ngIf="dipendente.telefono == '' " class="text-muted"><i>Non specificato</i>
+                                        </p>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <div class="pagetitle">
+        <h1>Documenti Dipendente</h1>
+        <nav>
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a routerLink="/">Dashboard</a></li>
+                <li class="breadcrumb-item"><a routerLink="/dipendenti">Dipendenti</a></li>
+                <li class="breadcrumb-item active">Documenti Dipendente</li>
+            </ol>
+        </nav>
+    </div><!-- End Page Title -->
+
+    <div class="margin">
+        <div class="mb-3" *ngIf="this.auth.getRole()=='A'">
+            <button (click)="openAddDocumentoDipendente()" type="button" class="btn btn-primary" data-bs-toggle="modal"
+                data-bs-target="#addEmployeeModal">
+                Aggiungi Documento
+            </button>
+        </div>
+
+        <app-alert [page]="'Documenti'"></app-alert>
+
+    </div> <!-- End Margin -->
+
+    <app-documenti-tabella *ngIf="documenti && documenti.length>0" [documenti]="documenti" [dipendente]="dipendente"
+        (refreshData)="updateDocumenti()"></app-documenti-tabella>
+    <app-no-data *ngIf="documenti && documenti.length === 0" ></app-no-data>
+
+</div><!-- End #main -->

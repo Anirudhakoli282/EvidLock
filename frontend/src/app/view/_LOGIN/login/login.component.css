@@ -1,0 +1,9 @@
+.alert{
+    text-align: center;
+    padding-bottom: 0;
+}
+
+.logo img {
+    max-height: 50px;
+    margin-right: 6px;
+  }

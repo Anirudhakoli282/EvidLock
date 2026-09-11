@@ -1,0 +1,21 @@
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 2rem;
+}
+
+h1, h2 {
+    color: #444;
+}
+h4 {
+    /*font-size: 18px;*/
+    font-weight: 600;
+    color: #4154f1;
+}
+  
+p {
+    color: #6980aa;
+}
+.container {
+    padding-bottom: 35px;
+}

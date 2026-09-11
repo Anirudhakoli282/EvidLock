@@ -1,0 +1,86 @@
+.invalid-feedback,
+.empty-feedback {
+    display: none;
+}
+
+.was-validated :placeholder-shown:invalid ~ .empty-feedback {
+    display: block;
+}
+
+.was-validated :not(:placeholder-shown):invalid ~ .invalid-feedback {
+    display: block;
+}
+
+.is-invalid,
+.was-validated :invalid {
+    border-color: #dc3545;
+}
+
+.dipendenti-body {
+    background-image: url('./dipendenti-bg.png');
+    background-size: 100% 100%;
+    background-position: center center;
+    height: 100vh; /* Imposta l'altezza al 100% della viewport height */
+    margin: 0; /* Rimuove il margine predefinito del body */
+    align-items: center; /* Centra verticalmente il contenuto */
+}
+
+/*--------------------------------------------------------------
+  # Footer
+  --------------------------------------------------------------*/
+.footer {
+    padding: 20px 0;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.footer .copyright {
+    text-align: center;
+    color: #012970;
+}
+
+.footer .credits {
+    padding-top: 5px;
+    text-align: center;
+    font-size: 13px;
+    color: #012970;
+}
+
+/*--------------------------------------------------------------
+  # Error 401
+  --------------------------------------------------------------*/
+.error-401 {
+    padding: 30px;
+}
+
+.error-401 h1 {
+    font-size: 180px;
+    font-weight: 700;
+    color: #4154f1;
+    margin-bottom: 0;
+    line-height: 150px;
+}
+
+.error-401 h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #012970;
+    margin-bottom: 30px;
+}
+
+.error-401 .btn {
+    background: #51678f;
+    color: #fff;
+    padding: 8px 30px;
+}
+
+.error-401 .btn:hover {
+    background: #3e4f6f;
+}
+
+@media (min-width: 992px) {
+    .error-401 img {
+        max-width: 50%;
+    }
+}
+

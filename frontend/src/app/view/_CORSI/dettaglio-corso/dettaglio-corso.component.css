@@ -1,0 +1,16 @@
+.text-bold{
+    font-weight: bold;
+}
+
+.gradient-custom{
+    background: rgb(65,84,241);
+    background: linear-gradient(167deg, rgba(65,84,241,1) 0%, rgba(113,127,245,1) 150%);
+    border-top-left-radius: .5rem; 
+    border-bottom-left-radius: .5rem;
+}
+
+.big-icon{
+    font-size: 7rem;
+    margin-top: 3rem;
+    margin-bottom: 1rem;
+}

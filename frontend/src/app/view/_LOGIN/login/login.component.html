@@ -1,0 +1,119 @@
+<div class="container">
+
+  <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-lg-5 col-md-8 d-flex flex-column align-items-center justify-content-center">
+
+          <!-- Brand Logo & Header -->
+          <div class="text-center py-3">
+            <div class="d-inline-flex align-items-center justify-content-center bg-navy text-white rounded-circle mb-2 shadow" style="width: 64px; height: 64px; background-color: #0f2043;">
+              <i class="bi bi-shield-lock-fill fs-1 text-info"></i>
+            </div>
+            <h2 class="fw-bold mb-0 text-dark tracking-wide">Evid<span class="text-primary">Lock</span></h2>
+            <p class="text-muted small">Digital Evidence Chain-of-Custody Management System</p>
+          </div>
+
+          <div class="card mb-3 shadow border-0 rounded-3 w-100">
+            <div class="card-body p-4">
+
+              <div class="pb-2">
+                <h5 class="card-title text-center pb-0 fs-5 fw-bold text-dark">Secure Portal Authentication</h5>
+                <p class="text-center text-muted small">Enter your cryptographic officer credentials</p>
+              </div>
+
+              <!-- 1-Click Role Quick Select Demo Bar -->
+              <div class="mb-3 p-2 bg-light rounded border text-center">
+                <div class="small fw-semibold text-secondary mb-2">
+                  <i class="bi bi-lightning-charge-fill text-warning me-1"></i>Select Demo Role Account:
+                </div>
+                <div class="d-flex flex-wrap justify-content-center gap-1">
+                  <button type="button" class="btn btn-sm btn-outline-primary" (click)="selectDemoRole('SUPERVISOR')">
+                    👑 Supervisor
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-info text-dark" (click)="selectDemoRole('INVESTIGATOR')">
+                    🔍 Investigator
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-success" (click)="selectDemoRole('CUSTODIAN')">
+                    📦 Custodian
+                  </button>
+                  <button type="button" class="btn btn-sm btn-outline-secondary" (click)="selectDemoRole('AUDITOR')">
+                    ⚖️ Auditor (RO)
+                  </button>
+                </div>
+              </div>
+
+              <form [formGroup]="loginForm" class="row g-3 needs-validation" (ngSubmit)="submitForm()" novalidate>
+
+                <div class="col-12">
+                  <label for="email" class="form-label fw-semibold text-dark">Officer / Agent Email</label>
+                  <div class="input-group has-validation">
+                    <span class="input-group-text"><i class="bi bi-envelope-at"></i></span>
+                    <input formControlName="email" type="email" name="email" class="form-control"
+                      placeholder="e.g. supervisor@evidlock.gov"
+                      [class.is-invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                    <div *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
+                      class="invalid-feedback">
+                      Please enter a valid officer email address.
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <label for="password" class="form-label fw-semibold text-dark">Credential Key (Password)</label>
+                  <div class="input-group">
+                    <span class="input-group-text"><i class="bi bi-key-fill"></i></span>
+                    <input formControlName="password" type="password" name="password" class="form-control"
+                      placeholder="••••••••"
+                      [class.is-invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                  </div>
+                  <div *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
+                    class="invalid-feedback d-block">
+                    Password is required.
+                  </div>
+                </div>
+
+                <div class="col-12">
+                  <div class="form-check">
+                    <input formControlName="rememberMe" class="form-check-input" type="checkbox" name="remember"
+                      value="true" id="rememberMe">
+                    <label class="form-check-label small text-muted" for="rememberMe">Remember credentials</label>
+                  </div>
+                </div>
+
+                <!-- Error Messages -->
+                <div *ngIf="!success" class="col-12">
+                  <div class="alert alert-danger py-2 mb-0 small" role="alert">
+                    <i class="bi bi-exclamation-octagon-fill me-1"></i>
+                    <strong>Authentication failed:</strong> Invalid email or password.
+                  </div>
+                </div>
+
+                <div *ngIf="serverError" class="col-12">
+                  <div class="alert alert-danger py-2 mb-0 small" role="alert">
+                    <i class="bi bi-server me-1"></i>
+                    <strong>Server error:</strong> Backend connection failed.
+                  </div>
+                </div>
+
+                <div class="col-12 mt-4">
+                  <button class="btn btn-primary w-100 fw-bold py-2 shadow-sm" type="submit" [disabled]="loginForm.invalid">
+                    <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to Secure Vault
+                  </button>
+                </div>
+              </form>
+
+            </div>
+          </div>
+
+          <!-- Footer / Security notice -->
+          <div class="text-center text-muted small">
+            <i class="bi bi-lock me-1"></i>Protected by SHA-256 Hash Chaining &amp; Proxy-Enforced RBAC.
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>

@@ -1,0 +1,64 @@
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table align-middle mb-0 bg-white" mat-table [dataSource]="dataSource" matSort>
+
+                <ng-container matColumnDef="ragioneSociale">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ragione Sociale </th>
+                    <td mat-cell *matCellDef="let row">
+                        <div class="d-flex align-items-center">
+
+                            <ng-container *ngIf="row.img && row.img.startsWith('blob'); else defaultImg">
+                                <img [src]="row.img" alt="" style="width: 45px; height: 45px" class="rounded-circle" />
+                            </ng-container>
+
+                            <ng-template #defaultImg>
+                                <img src="https://cdn4.iconfinder.com/data/icons/basic-flat-ui-extra-set-200-item/76/ui_ux_minimalist_button_office_building_headquarter-512.png"
+                                    alt="" style="width: 45px; height: 45px; background-color: #f0f0f0;" class="rounded-circle" />
+                            </ng-template>
+
+                            <div class="ms-3">
+                                <p class="fw-bold mb-1">{{row.ragioneSociale}}</p>
+                                <p class="text-muted mb-0">{{row.email}}</p>
+                            </div>
+                        </div>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="pIva">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Partita IVA </th>
+                    <td mat-cell *matCellDef="let row">
+                        <p class="fw-normal mb-1">{{row.piva}}</p>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="indirizzo">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Indirizzo </th>
+                    <td mat-cell *matCellDef="let row">
+                        <p class="fw-normal mb-1">{{row.indirizzo}}</p>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="telefono">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Telefono </th>
+                    <td mat-cell *matCellDef="let row"> {{row.telefono}} </td>
+                </ng-container>
+
+                <!-- Azioni Column -->
+                <ng-container matColumnDef="azioni">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Azioni </th>
+                    <td mat-cell *matCellDef="let row">
+                        <a type="button" class="fw-bold small" data-mdb-ripple-color="dark" (click)="openDeleteAzienda(row)">
+                            Elimina
+                        </a>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            </table>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+        </div>
+    </div>
+</div>

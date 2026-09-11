@@ -1,0 +1,58 @@
+.icon {
+    background-color: #eeeeeee8;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 40px;
+
+}
+
+.badge span {
+    background-color: #fffbec;
+    width: fit-content;
+    height: fit-content;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: flex;
+    color: #ffc55a;
+    justify-content: center;
+    align-items: center;
+    margin-left: -12px;
+    margin-bottom: 10px;
+}
+
+/*
+@media screen and (max-width: 767px) {
+    .badge{
+        visibility: hidden;
+    }
+    
+}
+*/
+
+.progress {
+    height: 10px;
+    border-radius: 10px
+}
+
+.progress div {
+    background-color: rgb(65,84,241);
+}
+
+.text1 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.text2 {
+    color: #a5aec0;
+}
+
+/* CARD */
+.card-header{
+    background-color: #fff;
+    border-bottom: 1px solid #e6e6e6;
+    position: relative;
+    border-radius: 10px 10px 0 0;
+}

@@ -1,0 +1,119 @@
+<div class="modal-header">
+    <h4 class="modal-title">Aggiungi Nuovo Dipendente</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <!-- Contenuto del tuo modulo -->
+    <!-- Angular Reactive Form Validation -->
+    <form [formGroup]="addCorsoForm" class="row g-3" (ngSubmit)="submitForm()" novalidate>
+        <div class="col-md-6">
+            <label for="nome" class="form-label">Nome*</label>
+            <input formControlName="nome" type="text" class="form-control"
+                [class.is-invalid]="addCorsoForm.get('nome')?.invalid && addCorsoForm.get('nome')?.touched">
+            <div *ngIf="addCorsoForm.get('nome')?.invalid && addCorsoForm.get('nome')?.touched"
+                class="invalid-feedback">
+                Nome è obbligatorio.
+            </div>
+
+        </div>
+
+        <div class="col-md-6">
+            <label for="categoria" class="form-label">Categoria*</label>
+            <div class="dropdown-center">
+                <div class="input-group mb-3">
+                    <select formControlName="categoria" class="form-select" id="categoria"
+                        [class.is-invalid]="addCorsoForm.get('categoria')?.invalid && addCorsoForm.get('categoria')?.touched">
+                        <option value="" disabled selected>Seleziona</option>
+                        <option *ngFor="let cat of categorie" [value]="cat">{{ cat }}</option>
+                    </select>
+                    <div *ngIf="addCorsoForm.get('categoria')?.invalid && addCorsoForm.get('categoria')?.touched"
+                        class="invalid-feedback">Selezionare una categoria valida.
+                    </div>
+                    <div *ngIf="addCorsoForm.get('categoria')?.invalid && addCorsoForm.get('categoria')?.touched"
+                        class="invalid-feedback">Selezionare una categoria valida.
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="prezzo" class="form-label">Prezzo*</label>
+            <div class="input-group">
+                <input formControlName="prezzo" class="form-control" type="number" min="0" step="10.00"
+                    [class.is-invalid]="addCorsoForm.get('prezzo')?.invalid && addCorsoForm.get('prezzo')?.touched" />
+                <span class="input-group-text">€</span>
+
+                <div *ngIf="addCorsoForm.get('prezzo')?.invalid && addCorsoForm.get('prezzo')?.touched"
+                    class="invalid-feedback">
+                    Prezzo è obbligatorio.
+                </div>
+                <div *ngIf="addCorsoForm.get('prezzo')?.hasError('invalidDecimal') && addCorsoForm.get('prezzo')?.touched"
+                    class="invalid-feedback">
+                    Inserire un prezzo con al massimo due cifre decimali.
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="duarata" class="form-label">Durata*</label>
+            <div class="input-group">
+                <input formControlName="durata" class="form-control" type="number" min="0" step="5"
+                    [class.is-invalid]="addCorsoForm.get('durata')?.invalid && addCorsoForm.get('durata')?.touched" />
+                <span class="input-group-text">h</span>
+
+                <div *ngIf="addCorsoForm.get('durata')?.invalid && addCorsoForm.get('durata')?.touched"
+                    class="invalid-feedback">
+                    Durata è obbligatoria.
+                </div>
+                <div *ngIf="addCorsoForm.get('durata')?.hasError('invalidInteger') && addCorsoForm.get('durata')?.touched"
+                    class="invalid-feedback">
+                    Durata deve essere un numero intero.
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-12" *ngIf="corso == undefined">
+            <label for="posti" class="form-label">Posti*</label>
+            <input formControlName="posti" type="number" class="form-control" min="0" step="5"
+                [class.is-invalid]="addCorsoForm.get('posti')?.invalid && addCorsoForm.get('posti')?.touched">
+
+            <div *ngIf="addCorsoForm.get('posti')?.invalid && addCorsoForm.get('posti')?.touched"
+                class="invalid-feedback">
+                Posti è obbligatorio.
+            </div>
+            <div *ngIf="addCorsoForm.get('posti')?.hasError('invalidInteger') && addCorsoForm.get('posti')?.touched"
+                class="invalid-feedback">
+                Durata deve essere un numero intero.
+            </div>
+
+        </div>
+
+        <div class="col-md-12">
+            <label for="descrizione" class="form-label">Descrizione*</label>
+            <textarea formControlName="descrizione" type="text" class="form-control"
+                [class.is-invalid]="addCorsoForm.get('descrizione')?.invalid && addCorsoForm.get('descrizione')?.touched"></textarea>
+            <div *ngIf="addCorsoForm.get('descrizione')?.invalid && addCorsoForm.get('descrizione')?.touched"
+                class="invalid-feedback">
+                Descrizione è obbligatoria.
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <label>
+                <input formControlName="esameFinale" type="checkbox" class="form-check-input">
+                Esame finale
+            </label>
+        </div>
+
+    </form><!-- End Angular Reactive Form Validation -->
+
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancel click')">Chiudi</button>
+    <button type="button" class="btn btn-primary" [disabled]="addCorsoForm.invalid"
+        (click)="submitForm()">Salva</button>
+</div>

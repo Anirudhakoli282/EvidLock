@@ -1,0 +1,82 @@
+<div class="modal-header">
+    <h4 class="modal-title">Aggiungi Nuova Azienda</h4>
+    <!--<button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>-->
+</div>
+<div class="modal-body">
+
+
+    <form [formGroup]="addAziendaForm" class="row g-3" (ngSubmit)="submitForm()" novalidate>
+
+        <div class="col-md-6">
+            <label for="nome" class="form-label">Ragione Sociale*</label>
+            <input formControlName="ragioneSociale" type="text" class="form-control"
+                [class.is-invalid]="addAziendaForm.get('ragioneSociale')?.invalid && addAziendaForm.get('ragioneSociale')?.touched">
+            <div *ngIf="addAziendaForm.get('ragioneSociale')?.invalid && addAziendaForm.get('ragioneSociale')?.touched"
+                class="invalid-feedback">
+                Campo obbligatorio.
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="telefono" class="form-label">Partita Iva*</label>
+            <input formControlName="piva" type="text" class="form-control"
+               [class.is-invalid]="addAziendaForm.get('piva')?.invalid && addAziendaForm.get('piva')?.touched">
+            <div *ngIf="addAziendaForm.get('piva')?.invalid && addAziendaForm.get('piva')?.touched"
+                class="invalid-feedback">
+                Partita Iva non valida.
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <label for="email" class="form-label">Email*</label>
+            <div class="input-group">
+                <span class="input-group-text" id="inputGroupPrepend">&#64;</span>
+                <input  formControlName="email" class="form-control" type="email"
+                    [class.is-invalid]="addAziendaForm.get('email')?.invalid && addAziendaForm.get('email')?.touched">
+                <div *ngIf="addAziendaForm.get('email')?.invalid && addAziendaForm.get('email')?.touched"
+                    class="invalid-feedback">
+                    Email è obbligatoria e deve essere valida.
+                </div>
+            </div> 
+        </div>
+
+        <div class="col-md-6">
+            <label for="telefono" class="form-label">Telefono*</label>
+            <input formControlName="telefono" type="telefono" class="form-control"
+            [class.is-invalid]="addAziendaForm.get('telefono')?.invalid && addAziendaForm.get('telefono')?.touched">
+            <div *ngIf="addAziendaForm.get('telefono')?.invalid && addAziendaForm.get('telefono')?.touched"
+            class="invalid-feedback">
+            Numero di telefono non valido.
+        </div>
+        </div>
+
+        <div class="col-md-6">
+            <label for="indirizzo" class="form-label">Indirizzo*</label>
+            <input formControlName="indirizzo" type="text" class="form-control"
+               [class.is-invalid]="addAziendaForm.get('indirizzo')?.invalid && addAziendaForm.get('indirizzo')?.touched">
+            <div *ngIf="addAziendaForm.get('indirizzo')?.invalid && addAziendaForm.get('indirizzo')?.touched"
+                class="invalid-feedback">
+                Inserire un indirizzo valido.
+            </div>
+        </div>
+
+
+        <!-- Carica file -->
+        <div class="col-md-12">
+            <label for="img" class="form-label">Carica Immagine</label>
+            <input formControlName="img" type="file" class="form-control" id="file"
+                [class.is-invalid]="addAziendaForm.get('img')?.invalid && addAziendaForm.get('img')?.touched"
+                accept="image/*" (change)="onFileSelected($event)">
+        </div>
+       
+
+    </form>
+
+</div>
+<div class="modal-footer">
+    <!--<button type="button" class="btn btn-secondary" (click)="activeModal.dismiss('Cancel click')">Chiudi</button>-->
+    <button type="button" class="btn btn-primary" [disabled]="addAziendaForm.invalid"
+        (click)="submitForm()">Salva</button>
+</div>

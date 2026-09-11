@@ -1,0 +1,41 @@
+.form-select {
+    background-color: none;
+    border: none;
+    border-radius: 0;
+    border-bottom: solid 1px #4154f1;
+}
+
+.form-select:focus {
+    outline: none;
+    box-shadow: 0 0 5px #fff;
+}
+
+/* Rimuovi bordi e sfondi dagli elementi interni della select box */
+.form-select option {
+    background-color: transparent;
+    border: none;
+    color: #000;
+    border-radius: 0;
+}
+
+/* Aggiungi bordi e sfondi alle opzioni durante l'hover */
+.form-select option:hover {
+    background-color: #f5f5f5;
+    /* sfondo di material */
+    border: none;
+    border-radius: 4px;
+    /* angolo di material */
+}
+
+/* Rimuovi bordi e sfondi dal tag select durante l'hover */
+.form-select:hover {
+    outline: none;
+    border-color: #fff;
+    box-shadow: none;
+    /* material non ha box-shadow */
+}
+
+.logo img {
+    max-height: 38px;
+    margin-right: 6px;
+}
