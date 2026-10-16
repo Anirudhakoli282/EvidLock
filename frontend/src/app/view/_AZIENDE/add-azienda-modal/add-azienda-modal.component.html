@@ -10,12 +10,12 @@
     <form [formGroup]="addAziendaForm" class="row g-3" (ngSubmit)="submitForm()" novalidate>
 
         <div class="col-md-6">
-            <label for="nome" class="form-label">Ragione Sociale*</label>
-            <input formControlName="ragioneSociale" type="text" class="form-control"
-                [class.is-invalid]="addAziendaForm.get('ragioneSociale')?.invalid && addAziendaForm.get('ragioneSociale')?.touched">
-            <div *ngIf="addAziendaForm.get('ragioneSociale')?.invalid && addAziendaForm.get('ragioneSociale')?.touched"
+            <label for="nome" class="form-label">Agency Name*</label>
+            <input formControlName="name" type="text" class="form-control"
+                [class.is-invalid]="addAziendaForm.get('name')?.invalid && addAziendaForm.get('name')?.touched">
+            <div *ngIf="addAziendaForm.get('name')?.invalid && addAziendaForm.get('name')?.touched"
                 class="invalid-feedback">
-                Campo obbligatorio.
+                Required field.
             </div>
         </div>
 

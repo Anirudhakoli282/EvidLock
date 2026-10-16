@@ -36,6 +36,9 @@ export class DashboardComponent implements OnInit {
   recentEvents: CustodyEvent[] = [];
   nearingRetentionItems: EvidenceItem[] = [];
   disposalItems: EvidenceItem[] = [];
+  // All evidence items — fed into the AI Risk Scoring engine
+  allEvidenceItems: EvidenceItem[] = [];
+
   loadingRetentionCheck: boolean = false;
   retentionCheckMsg: string = '';
 
@@ -43,6 +46,7 @@ export class DashboardComponent implements OnInit {
     this.loadMetrics();
     this.loadRecentEvents();
     this.loadRetentionItems();
+    this.loadAllEvidenceForRiskScoring();
   }
 
   loadMetrics(): void {
@@ -57,7 +61,7 @@ export class DashboardComponent implements OnInit {
   }
 
   loadRecentEvents(): void {
-    this.custodyService.getRecentEvents(8).subscribe({
+    this.custodyService.getRecentEvents(50).subscribe({
       next: (events) => {
         this.recentEvents = events;
       },
@@ -76,6 +80,16 @@ export class DashboardComponent implements OnInit {
     this.retentionService.getEligibleForDisposal().subscribe({
       next: (items) => {
         this.disposalItems = items;
+      },
+      error: () => {}
+    });
+  }
+
+  /** Loads all evidence items so the AI Risk Scoring engine has full visibility */
+  loadAllEvidenceForRiskScoring(): void {
+    this.evidenceService.getEvidence().subscribe({
+      next: (items) => {
+        this.allEvidenceItems = items;
       },
       error: () => {}
     });

@@ -88,4 +88,6 @@ public class Agency {
     public void setIndirizzo(String address) { this.address = address; }
     public String getImmagine() { return logo; }
     public void setImmagine(String logo) { this.logo = logo; }
+    public String getImg() { return logo; }
+    public void setImg(String logo) { this.logo = logo; }
 }

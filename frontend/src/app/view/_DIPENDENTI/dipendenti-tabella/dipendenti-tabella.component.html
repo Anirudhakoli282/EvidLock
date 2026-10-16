@@ -1,59 +1,69 @@
-<div class="card">
-    <div class="card-body">
+<div class="card border-0 shadow-sm rounded-3">
+    <div class="card-body p-0">
         <div class="table-responsive">
             <table class="table align-middle mb-0 bg-white" mat-table [dataSource]="dataSource" matSort>
-                <!-- Name Column -->
-                <ng-container matColumnDef="cognome">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Nome </th>
+
+                <ng-container matColumnDef="name">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Officer Name </th>
                     <td mat-cell *matCellDef="let row">
                         <div class="d-flex align-items-center">
-
-                            <ng-container *ngIf="row.img && row.img.startsWith('blob'); else defaultImg">
-                                <img [src]="row.img" alt="" style="width: 45px; height: 45px" class="rounded-circle" />
-                            </ng-container>
-
-                            <ng-template #defaultImg>
-                                <img src="https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_960_720.png"
-                                    alt="" style="width: 45px; height: 45px" class="rounded-circle" />
-                            </ng-template>
-
+                            <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center text-primary fw-bold" style="width: 45px; height: 45px;">
+                                {{row.name.charAt(0) || 'U'}}
+                            </div>
                             <div class="ms-3">
-                                <p class="fw-bold mb-1">{{row.cognome}} {{row.nome}}</p>
-                                <p class="text-muted mb-0">{{row.email}}</p>
+                                <p class="fw-bold mb-1">{{row.name}}</p>
+                                <p class="text-muted mb-0 small">{{row.email}}</p>
                             </div>
                         </div>
                     </td>
                 </ng-container>
 
-                <!-- Ruolo Column -->
-                <ng-container matColumnDef="ruolo">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Ruolo </th>
+                <ng-container matColumnDef="role">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Role </th>
                     <td mat-cell *matCellDef="let row">
-                        <p class="fw-normal mb-1">{{row.ruolo}}</p>
+                        <span class="badge" 
+                              [class.bg-danger]="row.role === 'SUPERVISOR'"
+                              [class.bg-primary]="row.role === 'INVESTIGATOR'"
+                              [class.bg-success]="row.role === 'CUSTODIAN'"
+                              [class.bg-warning]="row.role === 'AUDITOR'"
+                              [class.text-dark]="row.role === 'AUDITOR'">
+                            {{row.role}}
+                        </span>
+                    </td>
+                </ng-container>
+                
+                <ng-container matColumnDef="badgeNumber">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Badge No. </th>
+                    <td mat-cell *matCellDef="let row">
+                        <p class="fw-normal mb-1 font-monospace"><i class="bi bi-person-badge me-1"></i>{{row.badgeNumber}}</p>
                     </td>
                 </ng-container>
 
-                <!-- Data Assunzione Column -->
-                <ng-container matColumnDef="dataAssunzione">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Data Assunzione</th>
-                    <td mat-cell *matCellDef="let row"> {{row.dataAssunzione}} </td>
+                <ng-container matColumnDef="agencyCode">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Agency Code </th>
+                    <td mat-cell *matCellDef="let row">
+                        <span class="badge bg-secondary font-monospace">{{row.agencyCode}}</span>
+                    </td>
                 </ng-container>
 
-                <!-- Azioni Column -->
-                <ng-container matColumnDef="azioni">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Azioni </th>
-                    <td mat-cell *matCellDef="let row">
-                        <a class="fw-bold small" data-mdb-ripple-color="dark" routerLink="/dipendenti/{{row.id}}">
-                            Dettagli
-                        </a>
-                    </td>
+                <ng-container matColumnDef="phone">
+                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Contact </th>
+                    <td mat-cell *matCellDef="let row"> <span class="small">{{row.phone}}</span> </td>
                 </ng-container>
 
                 <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                 <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
 
+                <!-- No Data Row -->
+                <tr class="mat-row" *matNoDataRow>
+                    <td class="mat-cell text-center py-5 text-muted" colspan="5">
+                        <i class="bi bi-people fs-2 d-block mb-2"></i>
+                        No personnel found in the system.
+                    </td>
+                </tr>
+
             </table>
-            <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+            <mat-paginator [pageSizeOptions]="[5, 10, 25]" aria-label="Select page of officers" class="border-top"></mat-paginator>
         </div>
     </div>
 </div>

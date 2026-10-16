@@ -1,0 +1,141 @@
+<div class="card border-0 shadow-sm rounded-3 mb-4 risk-scoring-card">
+
+  <!-- Card Header -->
+  <div class="card-header border-0 py-3 risk-header">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center">
+        <div class="risk-icon-wrapper me-3">
+          <i class="bi bi-cpu-fill"></i>
+        </div>
+        <div>
+          <h5 class="card-title mb-0 fw-bold text-white">
+            AI Evidence Risk Scoring
+          </h5>
+          <small class="text-white-50">Multi-factor real-time threat analysis engine</small>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2">
+        <span class="badge bg-white text-dark fw-semibold" *ngIf="riskScores.length > 0">
+          Avg. Risk: {{ averageScore }}/100
+        </span>
+        <span class="badge ai-badge">
+          <i class="bi bi-lightning-charge-fill me-1"></i>AI-Powered
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body p-0" *ngIf="evidenceItems.length > 0; else noEvidence">
+
+    <!-- Risk Summary Bar -->
+    <div class="risk-summary-bar px-4 py-3 d-flex align-items-center gap-4 flex-wrap">
+      <div class="risk-stat" *ngIf="criticalCount > 0">
+        <i class="bi bi-exclamation-octagon-fill me-1 text-danger"></i>
+        <span class="fw-bold text-danger">{{ criticalCount }}</span>
+        <span class="text-muted small ms-1">Critical</span>
+      </div>
+      <div class="risk-stat" *ngIf="highCount > 0">
+        <i class="bi bi-exclamation-triangle-fill me-1 text-warning"></i>
+        <span class="fw-bold text-warning">{{ highCount }}</span>
+        <span class="text-muted small ms-1">High</span>
+      </div>
+      <div class="risk-stat" *ngIf="mediumCount > 0">
+        <i class="bi bi-exclamation-circle-fill me-1 text-info"></i>
+        <span class="fw-bold text-info">{{ mediumCount }}</span>
+        <span class="text-muted small ms-1">Medium</span>
+      </div>
+      <div class="risk-stat" *ngIf="lowCount > 0">
+        <i class="bi bi-check-circle-fill me-1 text-success"></i>
+        <span class="fw-bold text-success">{{ lowCount }}</span>
+        <span class="text-muted small ms-1">Low</span>
+      </div>
+      <div class="ms-auto">
+        <span class="text-muted small">
+          <i class="bi bi-info-circle me-1"></i>
+          Analyzing {{ riskScores.length }} evidence items across 6 risk dimensions
+        </span>
+      </div>
+    </div>
+
+    <div class="px-4 pb-3">
+
+      <!-- Risk Items List -->
+      <div class="risk-item-list">
+        <div class="risk-item" *ngFor="let rs of displayedScores; let i = index"
+             [class.risk-item-critical]="rs.level === 'CRITICAL'"
+             [class.risk-item-high]="rs.level === 'HIGH'"
+             [class.risk-item-medium]="rs.level === 'MEDIUM'"
+             [class.risk-item-low]="rs.level === 'LOW'">
+
+          <!-- Rank + Tag + Score -->
+          <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+            <div class="d-flex align-items-center gap-2">
+              <span class="rank-badge text-muted fw-bold">#{{ i + 1 }}</span>
+              <span class="badge bg-dark font-monospace px-2">{{ rs.item.evidenceTag }}</span>
+              <span [class]="'badge ' + getLevelBadgeClass(rs.level)">
+                <i [class]="'bi ' + getLevelIcon(rs.level) + ' me-1'"></i>
+                {{ rs.level }}
+              </span>
+              <span class="text-muted small text-truncate d-none d-md-inline" style="max-width: 200px;" [title]="rs.item.description">
+                {{ rs.item.description }}
+              </span>
+            </div>
+
+            <!-- Score display -->
+            <div class="d-flex align-items-center gap-2">
+              <div class="score-display" [class.score-critical]="rs.level === 'CRITICAL'"
+                   [class.score-high]="rs.level === 'HIGH'"
+                   [class.score-medium]="rs.level === 'MEDIUM'"
+                   [class.score-low]="rs.level === 'LOW'">
+                {{ rs.score }}
+                <span style="font-size:0.65rem; font-weight:400;">/100</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Score progress bar -->
+          <div class="mt-2">
+            <div class="progress risk-progress">
+              <div class="progress-bar" [class]="getScoreBarClass(rs.score)"
+                   role="progressbar"
+                   [style.width.%]="rs.score"
+                   [attr.aria-valuenow]="rs.score"
+                   aria-valuemin="0" aria-valuemax="100">
+              </div>
+            </div>
+          </div>
+
+          <!-- Risk Factors (chips) -->
+          <div class="mt-2 d-flex flex-wrap gap-1">
+            <span class="risk-factor-chip" *ngFor="let factor of rs.factors"
+                  [title]="factor.description + ' (+' + factor.points + ' pts)'">
+              <i [class]="'bi ' + factor.icon + ' me-1'"></i>
+              {{ factor.label }}
+              <span class="factor-pts" *ngIf="factor.points > 0">+{{ factor.points }}</span>
+            </span>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Show All toggle -->
+      <div class="text-center mt-3" *ngIf="riskScores.length > displayCount">
+        <button class="btn btn-sm btn-outline-secondary" (click)="showAll = !showAll">
+          <i class="bi" [class.bi-chevron-down]="!showAll" [class.bi-chevron-up]="showAll"></i>
+          {{ showAll ? 'Show Less' : 'Show All ' + riskScores.length + ' Items' }}
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Empty state -->
+  <ng-template #noEvidence>
+    <div class="card-body text-center text-muted py-4">
+      <i class="bi bi-cpu fs-2 d-block mb-2"></i>
+      No evidence items to analyze.
+    </div>
+  </ng-template>
+
+</div>

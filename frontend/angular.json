@@ -32,7 +32,9 @@
             "tsConfig": "tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",
+              "src/evidlock-favicon.png",
+              "src/evidlock-32.png"
             ],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",

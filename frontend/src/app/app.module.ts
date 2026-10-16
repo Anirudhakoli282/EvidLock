@@ -10,10 +10,8 @@ import { FooterComponent } from './view/_STATIC/footer/footer.component';
 import { DashboardComponent } from './view/_DASHBOARD/dashboard/dashboard.component';
 import { LoginComponent } from './view/_LOGIN/login/login.component';
 import { ContactComponent } from './view/_STATIC/contact/contact.component';
-import { QuestionComponent } from './view/_STATIC/question/question.component';
-import { ProfileComponent } from './view/_STATIC/profile/profile.component';
-import { CorsiComponent } from './view/_CORSI/corsi/corsi.component';
-import { DettaglioCorsoComponent } from './view/_CORSI/dettaglio-corso/dettaglio-corso.component';
+import { RiskScoringComponent } from './view/_DASHBOARD/risk-scoring/risk-scoring.component';
+
 import { DipendentiComponent } from './view/_DIPENDENTI/dipendenti/dipendenti.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
@@ -43,6 +41,7 @@ import { NgMultiSelectDropDownModule } from 'ng-multiselect-dropdown';
 import { SelettoreAziendaComponent } from './view/_DASHBOARD/selettore-azienda/selettore-azienda.component';
 import { RiepilogoCorsiComponent } from './view/_DASHBOARD/riepilogo-corsi/riepilogo-corsi.component';
 import { CorsiCardComponent } from './view/_CORSI/corsi-card/corsi-card.component';
+import { CorsiIconComponent } from './view/_CORSI/corsi-icon/corsi-icon.component';
 
 import { MatPaginatorIntl } from '@angular/material/paginator';
 import { CustomPaginatorIntl } from './CustomPaginatorIntl';
@@ -60,11 +59,15 @@ import { DatePipe } from '@angular/common';
 import { ConfirmModalComponent } from './view/GENERIC/confirm-modal/confirm-modal.component';
 import { NotAuthorizedComponent } from './view/GENERIC/not-authorized/not-authorized.component';
 
-import { CorsiIconComponent } from './view/_CORSI/corsi-icon/corsi-icon.component';
+
 import { DocumentiIconComponent } from './view/_DOCUMENTI/documenti-icon/documenti-icon.component';
 import { AlertComponent } from './view/GENERIC/alert/alert.component';
 import { OperazioniVelociComponent } from './view/_DASHBOARD/operazioni-veloci/operazioni-veloci.component';
 import { CopyrightComponent } from './view/_STATIC/copyright/copyright.component';
+import { QuestionComponent } from './view/_STATIC/question/question.component';
+import { ProfileComponent } from './view/_STATIC/profile/profile.component';
+import { CorsiComponent } from './view/_CORSI/corsi/corsi.component';
+import { DettaglioCorsoComponent } from './view/_CORSI/dettaglio-corso/dettaglio-corso.component';
 import { AddDipendentiListaModalComponent } from './view/_DIPENDENTI/add-dipendenti-lista-modal/add-dipendenti-lista-modal.component';
 import { NoDataComponent } from './view/GENERIC/no-data/no-data.component';
 
@@ -79,10 +82,7 @@ import { NoDataComponent } from './view/GENERIC/no-data/no-data.component';
     DashboardComponent,
     LoginComponent,
     ContactComponent,
-    QuestionComponent,
-    ProfileComponent,
-    CorsiComponent,
-    DettaglioCorsoComponent,
+    RiskScoringComponent,
     DipendentiComponent,
     DipendentiDettagliComponent,
     DocumentiComponent,
@@ -99,6 +99,7 @@ import { NoDataComponent } from './view/GENERIC/no-data/no-data.component';
     SelettoreAziendaComponent,
     RiepilogoCorsiComponent,
     CorsiCardComponent,
+    CorsiIconComponent,
     AziendeComponent,
     AziendeTabellaComponent,
     AddAziendaModalComponent,
@@ -108,11 +109,14 @@ import { NoDataComponent } from './view/GENERIC/no-data/no-data.component';
     NotFoundComponent,
     ConfirmModalComponent,
     NotAuthorizedComponent,
-    CorsiIconComponent,
     DocumentiIconComponent,
     AlertComponent,
     OperazioniVelociComponent,
     CopyrightComponent,
+    QuestionComponent,
+    ProfileComponent,
+    CorsiComponent,
+    DettaglioCorsoComponent,
     AddDipendentiListaModalComponent,
     NoDataComponent,
   ],

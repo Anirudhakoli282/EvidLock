@@ -1,63 +1,29 @@
-import { Component, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
-
-import { Azienda } from '../../../model/Azienda';
-
+import { Component, Input, OnInit, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { ConfirmModalComponent } from '../../GENERIC/confirm-modal/confirm-modal.component';
-import { EventEmitter } from '@angular/core';
-import { Output } from '@angular/core';
+import { Agency } from '../../../model/Agency';
 
 @Component({
   selector: 'app-aziende-tabella',
   templateUrl: './aziende-tabella.component.html',
   styleUrl: './aziende-tabella.component.css'
 })
-export class AziendeTabellaComponent {
-  displayedColumns: string[] = ['ragioneSociale', 'pIva', 'indirizzo', 'telefono', 'azioni'];
-  dataSource: MatTableDataSource<Azienda>;
+export class AziendeTabellaComponent implements OnInit {
+  @Input() agencies: Agency[] = [];
+
+  displayedColumns: string[] = ['logo', 'name', 'agencyCode', 'phone', 'address'];
+  dataSource!: MatTableDataSource<Agency>;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
-  @Input() aziende: Azienda[] = [];
-  @Output() refreshData: EventEmitter<void> = new EventEmitter<void>();
-
-
-  constructor
-    (
-      private modalService: NgbModal,
-      private cdr: ChangeDetectorRef
-    ) {
-    this.dataSource = new MatTableDataSource(this.aziende);
+  ngOnInit(): void {
+    this.dataSource = new MatTableDataSource(this.agencies);
   }
 
   ngAfterViewInit() {
-    // If necessario per aspettare che il componente sia caricato
-    if (this.aziende.length > 0) {
-      this.dataSource.data = this.aziende;
-      this.dataSource.paginator = this.paginator;
-      this.dataSource.sort = this.sort;
-    }
-    this.cdr.detectChanges();
+    this.dataSource.paginator = this.paginator;
+    this.dataSource.sort = this.sort;
   }
-
-  openDeleteAzienda(azienda: Azienda) {
-    const modalRef = this.modalService.open(ConfirmModalComponent, {
-      size: 'md' // 'lg' sta per grande, puoi utilizzare anche 'sm' per piccolo
-    });
-
-    // Passa il this.dipendente al modal
-    modalRef.componentInstance.azienda = azienda;
-    modalRef.componentInstance.function = 'deleteAzienda';
-
-    modalRef.componentInstance.refreshData.subscribe(() => {
-      this.refreshData.emit();
-    });
-  }
-
-
-
 }

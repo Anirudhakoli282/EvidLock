@@ -3,7 +3,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AlertService } from '../../../service/alert/alert.service';
 import { AddDipendenteCorsoModalComponent } from '../add-dipendente-corso-modal/add-dipendente-corso-modal.component';
 
-import { Dipendente } from '../../../model/Dipendente';
+// import { Dipendente } from '../../../model/Dipendente';
 
 import { Corso } from '../../../model/Corso';
 import { CorsiService } from '../../../service/corsi/corsi.service';
@@ -27,7 +27,7 @@ import { of } from 'rxjs';
 
 export class DettaglioCorsoComponent {
   corso?: Corso;
-  dipendentiIscritti?: Dipendente[];
+  dipendentiIscritti?: any[];
 
   isInitialized: boolean = false;
 

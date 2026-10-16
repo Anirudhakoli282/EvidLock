@@ -41,8 +41,8 @@
 
 
                             <img *ngIf="dipendente.img == '' || dipendente.img == null"
-                                src="https://cdn.pixabay.com/photo/2018/11/13/21/43/avatar-3814049_960_720.png"
-                                alt="Avatar" class="img-fluid my-5" style="width: 100px;" />
+                                src="https://ui-avatars.com/api/?name={{dipendente.nome}}+{{dipendente.cognome}}&background=random&size=128"
+                                alt="Avatar" class="img-fluid my-5 rounded-circle" style="width: 100px;" />
 
                             <img *ngIf="dipendente.img && !dipendente.img.startsWith('./')" [src]="dipendente.img"
                                 alt="Avatar" class="img-fluid my-5"

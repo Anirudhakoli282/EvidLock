@@ -1,0 +1,181 @@
+/* ──────────────────────────────────────────────────
+   AI EVIDENCE RISK SCORING — Premium Component CSS
+   ────────────────────────────────────────────────── */
+
+.risk-scoring-card {
+  overflow: hidden;
+  border: 1px solid rgba(0,0,0,0.06) !important;
+  transition: box-shadow 0.2s ease;
+}
+
+.risk-scoring-card:hover {
+  box-shadow: 0 8px 30px rgba(0,0,0,0.12) !important;
+}
+
+/* Header gradient */
+.risk-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f2043 100%);
+  border-bottom: 2px solid rgba(99, 179, 237, 0.3);
+}
+
+/* AI icon wrapper */
+.risk-icon-wrapper {
+  width: 42px;
+  height: 42px;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.2rem;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+/* AI badge */
+.ai-badge {
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  color: white;
+  font-size: 0.73rem;
+  letter-spacing: 0.03em;
+  animation: ai-pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes ai-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
+}
+
+/* Risk summary bar */
+.risk-summary-bar {
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.risk-stat {
+  font-size: 0.88rem;
+}
+
+/* Individual risk item row */
+.risk-item {
+  padding: 14px 0;
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 0.15s ease;
+  animation: fadeInRow 0.3s ease both;
+}
+
+.risk-item:last-child {
+  border-bottom: none;
+}
+
+.risk-item:hover {
+  background: #fafafa;
+  border-radius: 8px;
+  padding-left: 8px;
+  padding-right: 8px;
+  margin-left: -8px;
+  margin-right: -8px;
+}
+
+@keyframes fadeInRow {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Left accent borders based on risk level */
+.risk-item-critical { border-left: 3px solid #ef4444 !important; padding-left: 12px; }
+.risk-item-high     { border-left: 3px solid #f97316 !important; padding-left: 12px; }
+.risk-item-medium   { border-left: 3px solid #0ea5e9 !important; padding-left: 12px; }
+.risk-item-low      { border-left: 3px solid #22c55e !important; padding-left: 12px; }
+
+/* Rank badge */
+.rank-badge {
+  font-size: 0.78rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+/* Risk Level Badges */
+.badge-risk-critical {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.badge-risk-high {
+  background: linear-gradient(135deg, #f97316, #c2410c);
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.badge-risk-medium {
+  background: linear-gradient(135deg, #0ea5e9, #0284c7);
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.badge-risk-low {
+  background: linear-gradient(135deg, #22c55e, #15803d);
+  color: white;
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+/* Score display */
+.score-display {
+  font-size: 1.4rem;
+  font-weight: 800;
+  min-width: 64px;
+  text-align: right;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.score-critical { color: #ef4444; }
+.score-high     { color: #f97316; }
+.score-medium   { color: #0ea5e9; }
+.score-low      { color: #22c55e; }
+
+/* Progress bar */
+.risk-progress {
+  height: 5px;
+  border-radius: 99px;
+  background: #e2e8f0;
+}
+
+.risk-progress .progress-bar {
+  border-radius: 99px;
+  transition: width 0.8s ease;
+}
+
+/* Risk factor chips */
+.risk-factor-chip {
+  display: inline-flex;
+  align-items: center;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 99px;
+  padding: 2px 9px;
+  font-size: 0.7rem;
+  color: #475569;
+  white-space: nowrap;
+  cursor: default;
+  transition: background 0.15s;
+}
+
+.risk-factor-chip:hover {
+  background: #e2e8f0;
+}
+
+.factor-pts {
+  margin-left: 4px;
+  font-weight: 700;
+  color: #94a3b8;
+}

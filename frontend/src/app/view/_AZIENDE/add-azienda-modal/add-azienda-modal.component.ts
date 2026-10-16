@@ -26,7 +26,7 @@ export class AddAziendaModalComponent {
     private azienteService: AziendeService,
     private alert: AlertService) {
     this.addAziendaForm = this.fb.group({
-      ragioneSociale: ['', Validators.required],
+      name: ['', Validators.required],
       piva: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       telefono: ['', Validators.required],
@@ -77,11 +77,11 @@ export class AddAziendaModalComponent {
     this.activeModal.close(this.addAziendaForm.value);
     this.azienteService.addAzienda(this.addAziendaForm.value, this.file).subscribe(
       response => {
-        this.alert.setAlertAziende("success", `Azienda <strong>${this.addAziendaForm.get("ragioneSociale")?.value}</strong> aggiunta con successo`);
+        this.alert.setAlertAziende("success", `Agency <strong>${this.addAziendaForm.get("name")?.value}</strong> added successfully`);
         this.refreshData.emit();
       },
       error => {
-        this.alert.setAlertAziende("danger", `Errore durante l'aggiunta dell'azienda <strong>${this.addAziendaForm.get("ragioneSociale")?.value}</strong>`);
+        this.alert.setAlertAziende("danger", `Error adding agency <strong>${this.addAziendaForm.get("name")?.value}</strong>`);
       }
     );
   }
