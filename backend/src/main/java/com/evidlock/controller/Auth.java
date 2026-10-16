@@ -9,30 +9,66 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @CrossOrigin(originPatterns = {"http://localhost:*", "http://127.0.0.1:*", "https://*.vercel.app", "https://*.onrender.com"}, allowCredentials = "true")
 public class Auth {
 
+    @GetMapping("/health")
+    public ResponseEntity<Map<String, Object>> health() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("status", "UP");
+        map.put("timestamp", System.currentTimeMillis());
+        try {
+            Connection conn = DBManager.getInstance().getConnection();
+            map.put("dbConnected", conn != null && !conn.isClosed());
+            try (Statement st = conn.createStatement();
+                 ResultSet rs = st.executeQuery("SELECT count(*) FROM users")) {
+                if (rs.next()) {
+                    map.put("usersTableExists", true);
+                    map.put("usersCount", rs.getInt(1));
+                }
+            } catch (Exception ex) {
+                map.put("usersTableError", ex.getMessage());
+            }
+        } catch (Exception e) {
+            map.put("dbError", e.getMessage());
+        }
+        return ResponseEntity.ok(map);
+    }
+
     @PostMapping("/login")
-    public ResponseEntity<AuthToken> login(@RequestBody User credentials, HttpServletRequest req) {
+    public ResponseEntity<?> login(@RequestBody User credentials, HttpServletRequest req) {
         if (credentials == null || credentials.getEmail() == null || credentials.getPassword() == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        User storedUser = DBManager.getInstance().getUserDao().findByEmail(credentials.getEmail().trim());
-        if (storedUser == null) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        try {
+            User storedUser = DBManager.getInstance().getUserDao().findByEmail(credentials.getEmail().trim());
+            if (storedUser == null) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+            if (!Utility.checkPassword(credentials.getPassword(), storedUser)) {
+                return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+            }
+
+            HttpSession session = req.getSession(true);
+            session.setAttribute("user", storedUser);
+
+            AuthToken auth = generateToken(storedUser);
+            return new ResponseEntity<>(auth, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Map<String, String> err = new HashMap<>();
+            err.put("error", "Database error: " + e.getMessage());
+            return new ResponseEntity<>(err, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-
-        if (!Utility.checkPassword(credentials.getPassword(), storedUser)) {
-            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-        }
-
-        HttpSession session = req.getSession(true);
-        session.setAttribute("user", storedUser);
-
-        AuthToken auth = generateToken(storedUser);
-        return new ResponseEntity<>(auth, HttpStatus.OK);
     }
 
     @PostMapping("/logout")
