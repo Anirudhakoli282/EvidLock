@@ -23,20 +23,52 @@ public class DBManager {
         return instance;
     }
 
+    static {
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException ignored) {
+        }
+    }
+
     public synchronized Connection getConnection() {
         try {
             if (conn == null || conn.isClosed()) {
                 Properties properties = loadProperties();
-                conn = DriverManager.getConnection(
-                        properties.getProperty("db.url"),
-                        properties.getProperty("db.user"),
-                        properties.getProperty("db.password")
-                );
+                String url = getPropertyOrEnv(properties, "db.url", "DB_URL");
+                String user = getPropertyOrEnv(properties, "db.user", "DB_USER");
+                String password = getPropertyOrEnv(properties, "db.password", "DB_PASSWORD");
+                conn = DriverManager.getConnection(url, user, password);
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Failed to establish PostgreSQL connection", e);
+            throw new RuntimeException("Failed to establish PostgreSQL connection: " + e.getMessage(), e);
         }
         return conn;
+    }
+
+    private String getPropertyOrEnv(Properties props, String propKey, String envKey) {
+        String envVal = System.getenv(envKey);
+        if (envVal != null && !envVal.isBlank()) {
+            return envVal.trim();
+        }
+        String val = props.getProperty(propKey);
+        if (val != null) {
+            val = val.trim();
+            if (val.startsWith("${") && val.endsWith("}")) {
+                String inner = val.substring(2, val.length() - 1);
+                int colonIdx = inner.indexOf(':');
+                if (colonIdx != -1) {
+                    String envName = inner.substring(0, colonIdx);
+                    String defVal = inner.substring(colonIdx + 1);
+                    String sysEnv = System.getenv(envName);
+                    return (sysEnv != null && !sysEnv.isBlank()) ? sysEnv.trim() : defVal.trim();
+                } else {
+                    String sysEnv = System.getenv(inner);
+                    return (sysEnv != null && !sysEnv.isBlank()) ? sysEnv.trim() : "";
+                }
+            }
+            return val;
+        }
+        return "";
     }
 
     private Properties loadProperties() {
