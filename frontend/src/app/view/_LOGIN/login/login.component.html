@@ -89,10 +89,28 @@
                   </div>
                 </div>
 
+                <!-- Waking up Render free-tier backend (auto-retry) -->
+                <div *ngIf="wakingUp" class="col-12">
+                  <div class="alert alert-warning py-2 mb-0 small" role="alert">
+                    <div class="d-flex align-items-center">
+                      <span class="spinner-border spinner-border-sm me-2 text-warning" role="status"></span>
+                      <div>
+                        <strong>Waking up secure server...</strong><br>
+                        <span class="text-muted" style="font-size:0.75rem">Attempt {{ retryCount }}/{{ MAX_RETRIES }} &mdash; This takes ~30 seconds on first load. Please wait.</span>
+                      </div>
+                    </div>
+                    <div class="progress mt-2" style="height:4px;">
+                      <div class="progress-bar progress-bar-striped progress-bar-animated bg-warning"
+                           role="progressbar" [style.width]="(retryCount / MAX_RETRIES * 100) + '%'"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Final failure after all retries -->
                 <div *ngIf="serverError" class="col-12">
                   <div class="alert alert-danger py-2 mb-0 small" role="alert">
                     <i class="bi bi-server me-1"></i>
-                    <strong>Server error:</strong> Backend connection failed.
+                    <strong>Server unavailable.</strong> The secure backend is not responding. Please try again in 1 minute.
                   </div>
                 </div>
 

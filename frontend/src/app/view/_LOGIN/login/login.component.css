@@ -1,9 +1,54 @@
-.alert{
-    text-align: center;
-    padding-bottom: 0;
+/* ── Login card ─────────────────────────────────────────── */
+.alert {
+  text-align: center;
+  padding-bottom: 0;
 }
 
 .logo img {
-    max-height: 50px;
-    margin-right: 6px;
+  max-height: 50px;
+  margin-right: 6px;
+}
+
+/* ── Responsive login page ──────────────────────────────── */
+@media (max-width: 576px) {
+  .card {
+    border-radius: 12px !important;
+    margin: 0 8px;
   }
+
+  .card-body {
+    padding: 1.25rem !important;
+  }
+
+  h5.card-title {
+    font-size: 1.1rem !important;
+  }
+
+  /* Demo role buttons wrap nicely on small screens */
+  .d-flex.flex-wrap.justify-content-center.gap-1 .btn {
+    font-size: 0.75rem;
+    padding: 4px 8px;
+  }
+
+  .btn.w-100 {
+    font-size: 0.95rem;
+  }
+}
+
+/* ── Login section background ────────────────────────────── */
+section.register {
+  background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 50%, #f0f4ff 100%);
+  min-height: 100vh;
+}
+
+/* ── Brand header spacing on mobile ─────────────────────── */
+@media (max-width: 576px) {
+  .text-center.py-3 {
+    padding-top: 1rem !important;
+    padding-bottom: 0.75rem !important;
+  }
+
+  .text-center.py-3 h2 {
+    font-size: 1.6rem;
+  }
+}
