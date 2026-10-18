@@ -15,12 +15,29 @@ import { CustodyTransferRequest } from '../../../model/CustodyTransferRequest';
 })
 export class DocumentiComponent implements OnInit {
   evidenceItems: EvidenceItem[] = [];
+  filteredItems: EvidenceItem[] = [];
+  filterText: string = '';
   pendingTransfers: CustodyTransferRequest[] = [];
   loading: boolean = false;
 
   totalCount: number = 0;
   legalHoldCount: number = 0;
   compromisedCount: number = 0;
+
+  applyFilter(text: string): void {
+    const q = text.toLowerCase().trim();
+    this.filteredItems = this.evidenceItems.filter(item =>
+      (item.evidenceTag || '').toLowerCase().includes(q) ||
+      (item.description || '').toLowerCase().includes(q) ||
+      (item.caseNumber || '').toLowerCase().includes(q) ||
+      (item.currentCustodianId || '').toLowerCase().includes(q)
+    );
+  }
+
+  clearFilter(): void {
+    this.filterText = '';
+    this.filteredItems = [];
+  }
 
   constructor(
     private modalService: NgbModal,

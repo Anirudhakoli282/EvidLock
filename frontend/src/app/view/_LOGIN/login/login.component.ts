@@ -18,6 +18,7 @@ export class LoginComponent {
 
   success: boolean = true;
   serverError: boolean = false;
+  loading: boolean = false;
 
   constructor(
     private router: Router,
@@ -54,9 +55,11 @@ export class LoginComponent {
   submitForm() {
     this.serverError = false;
     this.success = true;
+    this.loading = true;
     this.auth.login(this.loginForm.get('email')?.value, this.loginForm.get('password')?.value, this.loginForm.get('rememberMe')?.value).
       subscribe(
         result => {
+          this.loading = false;
           if (result) {
             this.router.navigate(['/']);
           }
@@ -65,6 +68,7 @@ export class LoginComponent {
           }
         },
         error => {
+          this.loading = false;
           console.error('Login error:', error);
           this.serverError = true;
         });

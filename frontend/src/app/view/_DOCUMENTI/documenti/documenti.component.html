@@ -121,8 +121,29 @@
     <div class="text-muted mt-2">Loading secure evidence vault...</div>
   </div>
 
+  <!-- Live Search / Filter Bar -->
+  <div class="card border-0 shadow-sm mb-3" *ngIf="!loading && evidenceItems.length > 0">
+    <div class="card-body py-2 px-3">
+      <div class="d-flex align-items-center gap-3">
+        <div class="input-group flex-grow-1">
+          <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <input type="text" class="form-control border-start-0 ps-0"
+            placeholder="Search by tag, description, case, custodian..."
+            [(ngModel)]="filterText"
+            (ngModelChange)="applyFilter($event)">
+          <button class="btn btn-outline-secondary border" *ngIf="filterText" (click)="clearFilter()" title="Clear search">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <div class="text-muted small text-nowrap" *ngIf="filterText">
+          {{ filteredItems.length }} result{{ filteredItems.length !== 1 ? 's' : '' }} found
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- Evidence Table Component -->
-  <app-documenti-tabella *ngIf="!loading && evidenceItems.length > 0" [evidenceItems]="evidenceItems" (refreshData)="loadData()"></app-documenti-tabella>
+  <app-documenti-tabella *ngIf="!loading && evidenceItems.length > 0" [evidenceItems]="filterText ? filteredItems : evidenceItems" (refreshData)="loadData()"></app-documenti-tabella>
 
   <!-- Empty State -->
   <app-no-data *ngIf="!loading && evidenceItems.length === 0"></app-no-data>

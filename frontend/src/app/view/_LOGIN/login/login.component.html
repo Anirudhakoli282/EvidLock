@@ -97,8 +97,10 @@
                 </div>
 
                 <div class="col-12 mt-4">
-                  <button class="btn btn-primary w-100 fw-bold py-2 shadow-sm" type="submit" [disabled]="loginForm.invalid">
-                    <i class="bi bi-box-arrow-in-right me-1"></i>Sign In to Secure Vault
+                  <button class="btn btn-primary w-100 fw-bold py-2 shadow-sm" type="submit" [disabled]="loginForm.invalid || loading">
+                    <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                    <span *ngIf="!loading"><i class="bi bi-box-arrow-in-right me-1"></i>Sign In to Secure Vault</span>
+                    <span *ngIf="loading">Authenticating...</span>
                   </button>
                 </div>
               </form>
