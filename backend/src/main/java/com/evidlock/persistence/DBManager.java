@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Properties;
 
 public class DBManager {
@@ -32,17 +33,69 @@ public class DBManager {
 
     public synchronized Connection getConnection() {
         try {
-            if (conn == null || conn.isClosed()) {
+            boolean isDead = (conn == null);
+            if (!isDead) {
+                try {
+                    isDead = conn.isClosed() || !conn.isValid(3);
+                } catch (Exception e) {
+                    isDead = true;
+                }
+            }
+
+            if (isDead) {
+                try {
+                    if (conn != null && !conn.isClosed()) {
+                        conn.close();
+                    }
+                } catch (Exception ignored) {}
+
                 Properties properties = loadProperties();
                 String url = getPropertyOrEnv(properties, "db.url", "DB_URL");
                 String user = getPropertyOrEnv(properties, "db.user", "DB_USER");
                 String password = getPropertyOrEnv(properties, "db.password", "DB_PASSWORD");
                 conn = DriverManager.getConnection(url, user, password);
+
+                // Run a non-blocking check to ensure seed users exist
+                ensureSeedUsers(conn);
             }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to establish PostgreSQL connection: " + e.getMessage(), e);
         }
         return conn;
+    }
+
+    public synchronized void forceReconnect() {
+        try {
+            if (conn != null && !conn.isClosed()) {
+                conn.close();
+            }
+        } catch (Exception ignored) {}
+        conn = null;
+        getConnection();
+    }
+
+    private void ensureSeedUsers(Connection c) {
+        try (Statement st = c.createStatement()) {
+            st.executeUpdate(
+                "INSERT INTO agencies (agency_code, name, email, phone, address, badge_prefix, logo) VALUES " +
+                "('MPD-01', 'Mumbai Police - Cyber & Economic Offences Wing', 'cybercrimes@mumbaipolice.gov.in', '+91-22-2262-1855', 'Crawford Market, D.N. Road, Mumbai, Maharashtra 400001', 'MPD', 'assets/img/agency-mpd.png'), " +
+                "('SFL-02', 'Forensic Science Laboratory - Maharashtra', 'fsl.lab@maharashtra.gov.in', '+91-20-2612-4900', 'Plot No. 17, Aundh, Pune, Maharashtra 411007', 'SFL', 'assets/img/agency-sfl.png'), " +
+                "('DAO-03', 'Central Bureau of Investigation - Mumbai Branch', 'cbi.mumbai@cbi.gov.in', '+91-22-2262-3535', 'Aayakar Bhavan, M.K. Road, Mumbai, Maharashtra 400020', 'DAO', 'assets/img/agency-dao.png'), " +
+                "('OIG-04', 'National Investigation Agency - Evidence Audit Cell', 'nia.audit@nia.gov.in', '+91-11-2436-5729', 'CGO Complex, Lodhi Road, New Delhi 110003', 'OIG', 'assets/img/agency-oig.png') " +
+                "ON CONFLICT (agency_code) DO NOTHING;"
+            );
+
+            st.executeUpdate(
+                "INSERT INTO users (email, password, name, badge_number, role, agency_code, phone, piva) VALUES " +
+                "('supervisor@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'ACP Rajesh Patil', 'MPD-SUP-101', 'SUPERVISOR', 'MPD-01', '+91-98201-10001', '36710385611'), " +
+                "('investigator@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'PI Priya Sharma', 'MPD-INV-402', 'INVESTIGATOR', 'MPD-01', '+91-98202-10002', '23267419900'), " +
+                "('custodian@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'Dr. Vikram Desai', 'SFL-CST-881', 'CUSTODIAN', 'SFL-02', '+91-98203-10003', '19833552187'), " +
+                "('auditor@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'Ananya Mehta', 'OIG-AUD-909', 'AUDITOR', 'OIG-04', '+91-98204-10004', '98714353456') " +
+                "ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password, role = EXCLUDED.role, name = EXCLUDED.name, agency_code = EXCLUDED.agency_code;"
+            );
+        } catch (Exception ignored) {
+            // Table structure might differ slightly or already populated; continue safely
+        }
     }
 
     private String getPropertyOrEnv(Properties props, String propKey, String envKey) {

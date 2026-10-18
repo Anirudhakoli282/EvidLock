@@ -13,15 +13,17 @@ import java.util.List;
 
 public class CaseDaoPostgres implements CaseDao {
 
-    private static Connection conn = null;
     private static CaseDaoPostgres instance = null;
 
     public static synchronized CaseDaoPostgres getInstance() {
         if (instance == null) {
             instance = new CaseDaoPostgres();
-            conn = DBManager.getInstance().getConnection();
         }
         return instance;
+    }
+
+    private Connection getConnection() {
+        return DBManager.getInstance().getConnection();
     }
 
     private Case mapRow(ResultSet rs) throws SQLException {
@@ -41,7 +43,7 @@ public class CaseDaoPostgres implements CaseDao {
     public List<Case> getAll() {
         List<Case> list = new ArrayList<>();
         String sql = "SELECT * FROM cases ORDER BY created_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -56,7 +58,7 @@ public class CaseDaoPostgres implements CaseDao {
     public List<Case> findByAgency(String agencyCode) {
         List<Case> list = new ArrayList<>();
         String sql = "SELECT * FROM cases WHERE agency_code = ? ORDER BY created_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, agencyCode);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -72,7 +74,7 @@ public class CaseDaoPostgres implements CaseDao {
     @Override
     public Case findById(Long id) {
         String sql = "SELECT * FROM cases WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -88,7 +90,7 @@ public class CaseDaoPostgres implements CaseDao {
     @Override
     public Case findByCaseNumber(String caseNumber) {
         String sql = "SELECT * FROM cases WHERE case_number = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, caseNumber);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -104,7 +106,7 @@ public class CaseDaoPostgres implements CaseDao {
     @Override
     public Long insert(Case c) {
         String sql = "INSERT INTO cases (case_number, title, description, status, agency_code, created_by) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, c.getCaseNumber());
             st.setString(2, c.getTitle());
             st.setString(3, c.getDescription());
@@ -125,7 +127,7 @@ public class CaseDaoPostgres implements CaseDao {
     @Override
     public boolean update(Case c) {
         String sql = "UPDATE cases SET title = ?, description = ?, status = ?, agency_code = ? WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, c.getTitle());
             st.setString(2, c.getDescription());
             st.setString(3, c.getStatus());
@@ -140,7 +142,7 @@ public class CaseDaoPostgres implements CaseDao {
     @Override
     public boolean updateStatus(Long id, String status) {
         String sql = "UPDATE cases SET status = ? WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, status);
             st.setLong(2, id);
             return st.executeUpdate() > 0;
@@ -152,7 +154,7 @@ public class CaseDaoPostgres implements CaseDao {
     @Override
     public long countByStatus(String status) {
         String sql = "SELECT COUNT(*) FROM cases WHERE status = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, status);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {

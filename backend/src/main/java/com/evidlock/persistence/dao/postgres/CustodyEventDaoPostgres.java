@@ -17,15 +17,17 @@ import java.util.List;
  */
 public class CustodyEventDaoPostgres implements CustodyEventDao {
 
-    private static Connection conn = null;
     private static CustodyEventDaoPostgres instance = null;
 
     public static synchronized CustodyEventDaoPostgres getInstance() {
         if (instance == null) {
             instance = new CustodyEventDaoPostgres();
-            conn = DBManager.getInstance().getConnection();
         }
         return instance;
+    }
+
+    private Connection getConnection() {
+        return DBManager.getInstance().getConnection();
     }
 
     private CustodyEvent mapRow(ResultSet rs) throws SQLException {
@@ -48,7 +50,7 @@ public class CustodyEventDaoPostgres implements CustodyEventDao {
         String sql = "INSERT INTO custody_events (evidence_item_id, actor_id, action, timestamp, " +
                 "from_custodian_id, to_custodian_id, notes, previous_event_hash, event_hash) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, event.getEvidenceItemId());
             st.setString(2, event.getActorId());
             st.setString(3, event.getAction());
@@ -72,7 +74,7 @@ public class CustodyEventDaoPostgres implements CustodyEventDao {
     @Override
     public CustodyEvent findById(Long id) {
         String sql = "SELECT * FROM custody_events WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -89,7 +91,7 @@ public class CustodyEventDaoPostgres implements CustodyEventDao {
     public List<CustodyEvent> findByEvidenceItem(Long evidenceItemId) {
         List<CustodyEvent> list = new ArrayList<>();
         String sql = "SELECT * FROM custody_events WHERE evidence_item_id = ? ORDER BY id ASC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, evidenceItemId);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -105,7 +107,7 @@ public class CustodyEventDaoPostgres implements CustodyEventDao {
     @Override
     public CustodyEvent findLatestByEvidenceItem(Long evidenceItemId) {
         String sql = "SELECT * FROM custody_events WHERE evidence_item_id = ? ORDER BY id DESC LIMIT 1";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, evidenceItemId);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -122,7 +124,7 @@ public class CustodyEventDaoPostgres implements CustodyEventDao {
     public List<CustodyEvent> getAll() {
         List<CustodyEvent> list = new ArrayList<>();
         String sql = "SELECT * FROM custody_events ORDER BY id DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -137,7 +139,7 @@ public class CustodyEventDaoPostgres implements CustodyEventDao {
     public List<CustodyEvent> findRecent(int limit) {
         List<CustodyEvent> list = new ArrayList<>();
         String sql = "SELECT * FROM custody_events ORDER BY timestamp DESC LIMIT ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setInt(1, limit);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {

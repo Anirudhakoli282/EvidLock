@@ -13,15 +13,17 @@ import java.util.List;
 
 public class AgencyDaoPostgres implements AgencyDao {
 
-    private static Connection conn = null;
     private static AgencyDaoPostgres instance = null;
 
     public static synchronized AgencyDaoPostgres getInstance() {
         if (instance == null) {
             instance = new AgencyDaoPostgres();
-            conn = DBManager.getInstance().getConnection();
         }
         return instance;
+    }
+
+    private Connection getConnection() {
+        return DBManager.getInstance().getConnection();
     }
 
     private Agency mapRow(ResultSet rs) throws SQLException {
@@ -40,7 +42,7 @@ public class AgencyDaoPostgres implements AgencyDao {
     public List<Agency> getAll() {
         List<Agency> list = new ArrayList<>();
         String sql = "SELECT * FROM agencies ORDER BY name ASC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -54,7 +56,7 @@ public class AgencyDaoPostgres implements AgencyDao {
     @Override
     public Agency findByCode(String agencyCode) {
         String sql = "SELECT * FROM agencies WHERE agency_code = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, agencyCode);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -70,7 +72,7 @@ public class AgencyDaoPostgres implements AgencyDao {
     @Override
     public Agency findByEmail(String email) {
         String sql = "SELECT * FROM agencies WHERE email = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, email);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -86,7 +88,7 @@ public class AgencyDaoPostgres implements AgencyDao {
     @Override
     public boolean insert(Agency agency) {
         String sql = "INSERT INTO agencies (agency_code, name, email, phone, address, badge_prefix, logo) VALUES (?, ?, ?, ?, ?, ?, ?)";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, agency.getAgencyCode());
             st.setString(2, agency.getName());
             st.setString(3, agency.getEmail());
@@ -103,7 +105,7 @@ public class AgencyDaoPostgres implements AgencyDao {
     @Override
     public boolean update(Agency agency) {
         String sql = "UPDATE agencies SET name = ?, email = ?, phone = ?, address = ?, badge_prefix = ?, logo = ? WHERE agency_code = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, agency.getName());
             st.setString(2, agency.getEmail());
             st.setString(3, agency.getPhone());

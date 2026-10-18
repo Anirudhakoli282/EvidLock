@@ -27,26 +27,19 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Wake up the Render backend immediately on app load.
-    // Render free tier sleeps after 15 min — this silent ping ensures
-    // the backend is ready before the user tries to log in.
+    // Proactively wake up backend as soon as app loads
     this.wakeBackend();
   }
 
   private wakeBackend(): void {
-    const wakeUrl = Settings.API_ENDPOINT.replace(/\/$/, '') + '/api/health';
-    this.http.get(wakeUrl, { responseType: 'text' }).subscribe({
-      next: () => console.log('[EvidLock] Backend is awake ✓'),
-      error: () => {
-        // Backend may be cold-starting — retry after 20 seconds
-        console.log('[EvidLock] Backend waking up, retry in 20s...');
-        setTimeout(() => {
-          this.http.get(wakeUrl, { responseType: 'text' }).subscribe({
-            next: () => console.log('[EvidLock] Backend awake after retry ✓'),
-            error: () => console.log('[EvidLock] Backend still starting up...')
-          });
-        }, 20000);
-      }
-    });
+    try {
+      const wakeUrl = Settings.API_ENDPOINT.replace(/\/$/, '') + '/api/health';
+      this.http.get(wakeUrl, { responseType: 'text' }).subscribe({
+        next: () => console.log('[EvidLock] Backend is awake ✓'),
+        error: () => console.log('[EvidLock] Backend waking up...')
+      });
+    } catch (e) {
+      // Non-critical background ping
+    }
   }
 }

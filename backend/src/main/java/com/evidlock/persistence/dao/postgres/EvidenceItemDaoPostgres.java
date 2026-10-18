@@ -10,15 +10,17 @@ import java.util.List;
 
 public class EvidenceItemDaoPostgres implements EvidenceItemDao {
 
-    private static Connection conn = null;
     private static EvidenceItemDaoPostgres instance = null;
 
     public static synchronized EvidenceItemDaoPostgres getInstance() {
         if (instance == null) {
             instance = new EvidenceItemDaoPostgres();
-            conn = DBManager.getInstance().getConnection();
         }
         return instance;
+    }
+
+    private Connection getConnection() {
+        return DBManager.getInstance().getConnection();
     }
 
     private EvidenceItem mapRow(ResultSet rs) throws SQLException {
@@ -56,7 +58,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     public List<EvidenceItem> getAll() {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "ORDER BY e.uploaded_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -71,7 +73,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     public List<EvidenceItem> findByCase(Long caseId) {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE e.case_id = ? ORDER BY e.uploaded_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, caseId);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -88,7 +90,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     public List<EvidenceItem> findByAgency(String agencyCode) {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE e.agency_code = ? ORDER BY e.uploaded_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, agencyCode);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -105,7 +107,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     public List<EvidenceItem> findByCustodian(String custodianEmail) {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE e.current_custodian_id = ? ORDER BY e.uploaded_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, custodianEmail);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -121,7 +123,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     @Override
     public EvidenceItem findById(Long id) {
         String sql = BASE_SELECT + "WHERE e.id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -137,7 +139,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     @Override
     public EvidenceItem findByTag(String tag) {
         String sql = BASE_SELECT + "WHERE e.evidence_tag = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, tag);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -156,7 +158,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
                 "original_filename, file_path, file_type, file_size, uploaded_by, current_custodian_id, " +
                 "status, legal_hold, integrity_status, retention_date, agency_code) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, item.getCaseId());
             st.setString(2, item.getEvidenceTag());
             st.setString(3, item.getDescription());
@@ -198,7 +200,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
         String sql = "UPDATE evidence_items SET description = ?, status = ?, legal_hold = ?, " +
                 "integrity_status = ?, retention_date = ?, agency_code = ?, file_type = ?, original_filename = ? " +
                 "WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, item.getDescription());
             st.setString(2, item.getStatus());
             st.setBoolean(3, item.isLegalHold());
@@ -224,7 +226,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
         }
 
         String sql = "DELETE FROM evidence_items WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, id);
             return st.executeUpdate() > 0;
         } catch (SQLException e) {
@@ -235,7 +237,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     @Override
     public boolean updateCustodian(Long id, String newCustodianEmail, String newStatus) {
         String sql = "UPDATE evidence_items SET current_custodian_id = ?, status = ? WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, newCustodianEmail);
             st.setString(2, newStatus);
             st.setLong(3, id);
@@ -248,7 +250,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     @Override
     public boolean updateLegalHold(Long id, boolean hold) {
         String sql = "UPDATE evidence_items SET legal_hold = ? WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setBoolean(1, hold);
             st.setLong(2, id);
             return st.executeUpdate() > 0;
@@ -260,7 +262,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     @Override
     public boolean updateIntegrityStatus(Long id, String status) {
         String sql = "UPDATE evidence_items SET integrity_status = ? WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, status);
             st.setLong(2, id);
             return st.executeUpdate() > 0;
@@ -273,7 +275,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     public List<EvidenceItem> findEligibleForDisposal() {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE e.retention_date <= CURRENT_DATE AND e.legal_hold = FALSE AND e.status <> 'Disposed' ORDER BY e.retention_date ASC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -289,7 +291,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE e.retention_date BETWEEN CURRENT_DATE AND (CURRENT_DATE + (? || ' days')::interval) " +
                 "AND e.status <> 'Disposed' ORDER BY e.retention_date ASC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setInt(1, days);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -306,7 +308,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
     public List<EvidenceItem> findIntegrityCompromised() {
         List<EvidenceItem> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE e.integrity_status = 'COMPROMISED' ORDER BY e.uploaded_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -333,7 +335,7 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
         }
         sql.append(" ORDER BY e.uploaded_at DESC");
 
-        try (PreparedStatement st = conn.prepareStatement(sql.toString())) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql.toString())) {
             int paramIndex = 1;
             for (String kw : keywords) {
                 String pattern = "%" + kw + "%";

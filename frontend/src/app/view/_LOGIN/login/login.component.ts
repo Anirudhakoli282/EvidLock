@@ -78,12 +78,21 @@ export class LoginComponent {
       },
       error => {
         console.error('Login error:', error);
+        // 401 = Invalid email or password: show error immediately without retry wait
+        if (error && error.status === 401) {
+          this.loading = false;
+          this.wakingUp = false;
+          this.success = false;
+          this.serverError = false;
+          return;
+        }
+
         if (this.retryCount < this.MAX_RETRIES) {
           this.retryCount++;
           this.wakingUp = true;
           this.serverError = false;
-          // Auto-retry after delay — wakes Render free-tier backend
-          setTimeout(() => this.attemptLogin(), this.RETRY_DELAY_MS);
+          // Auto-retry wakes Render free-tier backend cleanly
+          setTimeout(() => this.attemptLogin(), 8000);
         } else {
           this.loading = false;
           this.wakingUp = false;

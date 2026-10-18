@@ -13,15 +13,17 @@ import java.util.List;
 
 public class CertificationTrainingDaoPostgres implements CertificationTrainingDao {
 
-    private static Connection conn = null;
     private static CertificationTrainingDaoPostgres instance = null;
 
     public static synchronized CertificationTrainingDaoPostgres getInstance() {
         if (instance == null) {
             instance = new CertificationTrainingDaoPostgres();
-            conn = DBManager.getInstance().getConnection();
         }
         return instance;
+    }
+
+    private Connection getConnection() {
+        return DBManager.getInstance().getConnection();
     }
 
     private CertificationTraining mapRow(ResultSet rs) throws SQLException {
@@ -40,7 +42,7 @@ public class CertificationTrainingDaoPostgres implements CertificationTrainingDa
     public List<CertificationTraining> getAll() {
         List<CertificationTraining> list = new ArrayList<>();
         String sql = "SELECT * FROM certification_trainings ORDER BY title ASC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -54,7 +56,7 @@ public class CertificationTrainingDaoPostgres implements CertificationTrainingDa
     @Override
     public CertificationTraining findById(Long id) {
         String sql = "SELECT * FROM certification_trainings WHERE id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -71,7 +73,7 @@ public class CertificationTrainingDaoPostgres implements CertificationTrainingDa
     public List<CertificationTraining> findByAgency(String agencyCode) {
         List<CertificationTraining> list = new ArrayList<>();
         String sql = "SELECT * FROM certification_trainings WHERE agency_code = ? ORDER BY title ASC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, agencyCode);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -88,7 +90,7 @@ public class CertificationTrainingDaoPostgres implements CertificationTrainingDa
     public Long insert(CertificationTraining training) {
         String sql = "INSERT INTO certification_trainings (title, description, duration_hours, category, required_role, agency_code) " +
                 "VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, training.getTitle());
             st.setString(2, training.getDescription());
             st.setInt(3, training.getDurationHours());

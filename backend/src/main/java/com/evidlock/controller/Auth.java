@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.*;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -28,11 +30,14 @@ public class Auth {
             Connection conn = DBManager.getInstance().getConnection();
             map.put("dbConnected", conn != null && !conn.isClosed());
             try (Statement st = conn.createStatement();
-                 ResultSet rs = st.executeQuery("SELECT count(*) FROM users")) {
-                if (rs.next()) {
-                    map.put("usersTableExists", true);
-                    map.put("usersCount", rs.getInt(1));
+                 ResultSet rs = st.executeQuery("SELECT email, role FROM users LIMIT 10")) {
+                List<String> userList = new ArrayList<>();
+                while (rs.next()) {
+                    userList.add(rs.getString("email") + " (" + rs.getString("role") + ")");
                 }
+                map.put("usersTableExists", true);
+                map.put("usersCount", userList.size());
+                map.put("users", userList);
             } catch (Exception ex) {
                 map.put("usersTableError", ex.getMessage());
             }
@@ -49,7 +54,8 @@ public class Auth {
         }
 
         try {
-            User storedUser = DBManager.getInstance().getUserDao().findByEmail(credentials.getEmail().trim());
+            String email = credentials.getEmail().trim();
+            User storedUser = DBManager.getInstance().getUserDao().findByEmail(email);
             if (storedUser == null) {
                 return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
             }
@@ -67,6 +73,9 @@ public class Auth {
             e.printStackTrace();
             Map<String, String> err = new HashMap<>();
             err.put("error", "Database error: " + e.getMessage());
+            if (e.getCause() != null) {
+                err.put("cause", e.getCause().getMessage());
+            }
             return new ResponseEntity<>(err, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

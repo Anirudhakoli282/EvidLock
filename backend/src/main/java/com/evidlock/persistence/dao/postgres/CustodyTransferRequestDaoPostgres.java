@@ -10,15 +10,17 @@ import java.util.List;
 
 public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequestDao {
 
-    private static Connection conn = null;
     private static CustodyTransferRequestDaoPostgres instance = null;
 
     public static synchronized CustodyTransferRequestDaoPostgres getInstance() {
         if (instance == null) {
             instance = new CustodyTransferRequestDaoPostgres();
-            conn = DBManager.getInstance().getConnection();
         }
         return instance;
+    }
+
+    private Connection getConnection() {
+        return DBManager.getInstance().getConnection();
     }
 
     private CustodyTransferRequest mapRow(ResultSet rs) throws SQLException {
@@ -49,7 +51,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
     public Long insert(CustodyTransferRequest request) {
         String sql = "INSERT INTO custody_transfer_requests (evidence_item_id, from_custodian_id, to_custodian_id, " +
                 "reason, status, released_at) VALUES (?, ?, ?, ?, ?, ?) RETURNING id";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, request.getEvidenceItemId());
             st.setString(2, request.getFromCustodianId());
             st.setString(3, request.getToCustodianId());
@@ -70,7 +72,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
     @Override
     public CustodyTransferRequest findById(Long id) {
         String sql = BASE_SELECT + "WHERE r.id = ?";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, id);
             try (ResultSet rs = st.executeQuery()) {
                 if (rs.next()) {
@@ -87,7 +89,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
     public List<CustodyTransferRequest> findByEvidenceItem(Long evidenceItemId) {
         List<CustodyTransferRequest> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE r.evidence_item_id = ? ORDER BY r.created_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setLong(1, evidenceItemId);
             try (ResultSet rs = st.executeQuery()) {
                 while (rs.next()) {
@@ -104,7 +106,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
     public List<CustodyTransferRequest> findPendingForCustodian(String custodianEmail) {
         List<CustodyTransferRequest> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE (r.to_custodian_id = ? OR r.from_custodian_id = ?) AND r.status = 'PENDING' ORDER BY r.created_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, custodianEmail);
             st.setString(2, custodianEmail);
             try (ResultSet rs = st.executeQuery()) {
@@ -122,7 +124,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
     public List<CustodyTransferRequest> getAllPending() {
         List<CustodyTransferRequest> list = new ArrayList<>();
         String sql = BASE_SELECT + "WHERE r.status = 'PENDING' ORDER BY r.created_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -137,7 +139,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
     public List<CustodyTransferRequest> getAll() {
         List<CustodyTransferRequest> list = new ArrayList<>();
         String sql = BASE_SELECT + "ORDER BY r.created_at DESC";
-        try (PreparedStatement st = conn.prepareStatement(sql);
+        try (PreparedStatement st = getConnection().prepareStatement(sql);
              ResultSet rs = st.executeQuery()) {
             while (rs.next()) {
                 list.add(mapRow(rs));
@@ -156,7 +158,7 @@ public class CustodyTransferRequestDaoPostgres implements CustodyTransferRequest
         } else {
             sql = "UPDATE custody_transfer_requests SET status = ? WHERE id = ?";
         }
-        try (PreparedStatement st = conn.prepareStatement(sql)) {
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
             st.setString(1, status);
             if (isAccepted) {
                 st.setTimestamp(2, timestamp != null ? timestamp : new Timestamp(System.currentTimeMillis()));
