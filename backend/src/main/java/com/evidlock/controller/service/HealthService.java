@@ -1,32 +1,26 @@
 package com.evidlock.controller.service;
 
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-<br>import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import java.io.IOException;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 /**
- * Lightweight health-check servlet.
+ * Lightweight health-check endpoint.
  * GET /api/health → 200 OK {"status":"UP"}
- * Used by Vercel cron and Render to keep the backend alive (free tier).
+ * Used by Vercel cron to keep the Render backend alive (free tier).
  */
-@WebServlet(name = "HealthService", urlPatterns = {"/api/health"})
-public class HealthService extends HttpServlet {
+@RestController
+@CrossOrigin(originPatterns = {"*"})
+public class HealthService {
 
-    @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setStatus(HttpServletResponse.SC_OK);
-        resp.getWriter().write("{\"status\":\"UP\",\"service\":\"EvidLock Backend\"}");
-    }
-
-    @Override
-    protected void doOptions(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        resp.setHeader("Access-Control-Allow-Origin", "*");
-        resp.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
-        resp.setStatus(HttpServletResponse.SC_OK);
+    @GetMapping("/api/health")
+    public ResponseEntity<Map<String, String>> health() {
+        return ResponseEntity.ok(Map.of(
+            "status", "UP",
+            "service", "EvidLock Backend"
+        ));
     }
 }
