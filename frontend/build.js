@@ -15,14 +15,8 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-// Read the backend URL from Vercel's environment variables
-const apiUrl = process.env.RENDER_API_URL;
-if (!apiUrl) {
-  console.error('ERROR: RENDER_API_URL environment variable is not set.');
-  console.error('Please add it in Vercel project settings → Environment Variables.');
-  console.error('Example: https://your-backend.onrender.com/');
-  process.exit(1);
-}
+// Read the backend URL from Vercel's environment variables (fallback to live Render backend)
+const apiUrl = process.env.RENDER_API_URL || 'https://evidlock.onrender.com/';
 
 // Ensure the URL ends with a trailing slash
 const normalizedApiUrl = apiUrl.endsWith('/') ? apiUrl : apiUrl + '/';
