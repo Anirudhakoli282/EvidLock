@@ -67,7 +67,8 @@ public class PdfReportService {
             header.setAlignment(Element.ALIGN_CENTER);
             document.add(header);
 
-            Paragraph sub = new Paragraph("Court-Admissible Cryptographic Verification Ledger | ISO/IEC 27037 Standards Compliant\n" +
+            Paragraph sub = new Paragraph("Certificate under Section 65B of the Indian Evidence Act, 1872 & Section 63 of Bharatiya Sakshya Adhiniyam (BSA), 2023\n" +
+                    "Court-Admissible Cryptographic Electronic Record | ISO/IEC 27037 Standards Compliant\n" +
                     "Generated: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z").format(new Timestamp(System.currentTimeMillis())) +
                     " | Requested by: " + (requestingActor != null ? requestingActor : "Authorized Officer") + "\n\n", subtitleFont);
             sub.setAlignment(Element.ALIGN_CENTER);
@@ -210,13 +211,16 @@ public class PdfReportService {
             document.add(new Paragraph("\n"));
 
             // 5. Judicial Attestation & Signature Block
-            Paragraph sec3 = new Paragraph("3. EVIDENTIARY ATTESTATION & SIGN-OFF", sectionFont);
+            Paragraph sec3 = new Paragraph("3. STATUTORY EVIDENTIARY ATTESTATION (SEC. 65B EVIDENCE ACT & SEC. 63 BSA)", sectionFont);
             document.add(sec3);
             Paragraph certText = new Paragraph(
-                    "I hereby certify under penalty of perjury under the laws of the jurisdiction that the above " +
-                    "Chain of Custody record has been electronically verified against the tamper-evident cryptographic " +
-                    "ledger. No unauthorized edits, deletions, or hash discrepancies were identified. This document constitutes " +
-                    "a court-ready certified forensic record.\n\n",
+                    "I hereby solemnly declare and certify under Section 65B of the Indian Evidence Act, 1872 and Section 63 of Bharatiya " +
+                    "Sakshya Adhiniyam, 2023 that:\n" +
+                    "1. The electronic record described herein was produced by a computer system during the period over which the computer was " +
+                    "used regularly to store or process digital evidence for the purposes of forensic activities carried out by the investigating agency.\n" +
+                    "2. Throughout the said period, information of the kind contained in the electronic record was regularly fed into the computer in the ordinary course of activities.\n" +
+                    "3. Throughout the material part of the said period, the computer was operating properly and without malfunction affecting electronic custody records.\n" +
+                    "4. The digital evidence has been cryptographically sealed using SHA-256 bitstream hash digest and AES-256-GCM cipher standards, verified against the tamper-evident ledger.\n\n",
                     FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 8, Color.DARK_GRAY)
             );
             document.add(certText);

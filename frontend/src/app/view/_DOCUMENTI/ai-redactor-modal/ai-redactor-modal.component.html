@@ -1,0 +1,114 @@
+<div class="modal-header bg-navy text-white d-flex justify-content-between align-items-center" style="background-color: #0f2043;">
+  <div>
+    <h5 class="modal-title fw-bold text-white mb-0">
+      <i class="bi bi-robot text-warning me-2"></i>AI Evidentiary Classifier & PII Auto-Redactor
+    </h5>
+    <small class="text-white-50">Automated Document Type Tagging & Sensitive Personal Data Masking</small>
+  </div>
+  <button type="button" class="btn-close btn-close-white" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body p-4 bg-light">
+
+  <!-- Analyzing Spinner -->
+  <div *ngIf="analyzing" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status"></div>
+    <div class="fw-semibold text-dark mt-2">AI Neural Engine Scanning Exhibit...</div>
+    <div class="text-muted small">Parsing statutory indicators, Aadhaar/PAN tokens, and telecommunication logs</div>
+  </div>
+
+  <div *ngIf="!analyzing">
+
+    <!-- Document Classification Card -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body p-3">
+        <div class="d-flex justify-content-between align-items-start mb-2">
+          <div>
+            <span class="text-muted small text-uppercase fw-bold">AI Document Classification</span>
+            <h5 class="fw-bold mb-1 text-dark">
+              <span class="badge me-2" [ngClass]="classification.badgeClass">{{ classification.category }}</span>
+              {{ classification.label }}
+            </h5>
+          </div>
+          <span class="badge bg-success-subtle text-success border border-success fw-bold px-3 py-2">
+            <i class="bi bi-cpu-fill me-1"></i>{{ classification.confidence }}% Confidence
+          </span>
+        </div>
+        <p class="text-muted small mb-2">
+          <i class="bi bi-bank text-primary me-1"></i><strong>Legal Admissibility Framework:</strong> {{ classification.legalContext }}
+        </p>
+        <div class="d-flex gap-3 small text-secondary">
+          <span><i class="bi bi-tag-fill text-muted me-1"></i>Recommended Prefix: <code class="fw-bold text-primary">{{ classification.recommendedTagPrefix }}</code></span>
+          <span><i class="bi bi-calendar-check text-muted me-1"></i>Statutory Retention: <strong>{{ classification.suggestedRetentionYears }} Years</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- PII Detection Summary -->
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+        <div>
+          <h6 class="fw-bold mb-0 text-dark">
+            <i class="bi bi-shield-shaded text-danger me-2"></i>Personal Identifiable Information (PII) Auto-Redaction
+          </h6>
+          <small class="text-muted">Protects confidential Aadhaar, PAN, phone numbers, and addresses for court submission</small>
+        </div>
+        <span class="badge px-3 py-2 rounded-pill" [ngClass]="piiResult.piiCount > 0 ? 'bg-danger-subtle text-danger border border-danger' : 'bg-success-subtle text-success border border-success'">
+          <i class="bi me-1" [ngClass]="piiResult.piiCount > 0 ? 'bi-shield-exclamation' : 'bi-shield-check'"></i>
+          {{ piiResult.piiCount }} Sensitive Token{{ piiResult.piiCount !== 1 ? 's' : '' }} Detected
+        </span>
+      </div>
+
+      <div class="card-body p-3">
+
+        <!-- Detections Pills -->
+        <div *ngIf="piiResult.piiCount > 0" class="mb-3">
+          <span class="text-muted small fw-bold d-block mb-2">DETECTED SENSITIVE ENTITIES:</span>
+          <div class="d-flex flex-wrap gap-2">
+            <span *ngFor="let det of piiResult.detections" class="badge bg-light text-dark border p-2 font-monospace">
+              <span class="badge bg-secondary me-1">{{ det.type }}</span>
+              <del class="text-danger me-1">{{ det.matchedValue }}</del>
+              <i class="bi bi-arrow-right text-muted me-1"></i>
+              <strong class="text-success">{{ det.redactedValue }}</strong>
+            </span>
+          </div>
+        </div>
+
+        <div *ngIf="piiResult.piiCount === 0" class="alert alert-success d-flex align-items-center py-2 mb-3">
+          <i class="bi bi-check-circle-fill me-2 fs-5 text-success"></i>
+          <div>No sensitive personal identifiers detected. Exhibit description is safe for unredacted public court ledger view.</div>
+        </div>
+
+        <!-- Toggle View Mode: Original vs Redacted -->
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <span class="small fw-semibold text-secondary">Exhibit Text Preview:</span>
+          <div class="btn-group btn-group-sm">
+            <button type="button" class="btn" [ngClass]="viewMode === 'ORIGINAL' ? 'btn-secondary text-white' : 'btn-outline-secondary'" (click)="viewMode = 'ORIGINAL'">
+              Original Unmasked
+            </button>
+            <button type="button" class="btn" [ngClass]="viewMode === 'REDACTED' ? 'btn-danger text-white' : 'btn-outline-danger'" (click)="viewMode = 'REDACTED'">
+              <i class="bi bi-eye-slash-fill me-1"></i>Redacted Exhibit (Court Copy)
+            </button>
+          </div>
+        </div>
+
+        <!-- Text Box Display -->
+        <div class="p-3 rounded border font-monospace small bg-white text-dark shadow-inner" style="min-height: 90px; line-height: 1.6;">
+          <span *ngIf="viewMode === 'ORIGINAL'">{{ piiResult.originalText }}</span>
+          <span *ngIf="viewMode === 'REDACTED'" class="text-dark">{{ piiResult.redactedText }}</span>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="modal-footer bg-light border-0 pt-0">
+  <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()" [disabled]="analyzing">Close</button>
+  <button type="button" class="btn btn-primary fw-semibold" (click)="applyRedaction()" [disabled]="analyzing || applied">
+    <i class="bi bi-check2-circle me-1"></i>
+    <span *ngIf="!applied">Save & Apply Redacted Court Version</span>
+    <span *ngIf="applied">Applied!</span>
+  </button>
+</div>

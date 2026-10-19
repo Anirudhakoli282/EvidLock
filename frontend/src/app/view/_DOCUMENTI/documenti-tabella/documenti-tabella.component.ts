@@ -9,6 +9,8 @@ import { ReportService } from '../../../service/report/report.service';
 import { EvidenceItem } from '../../../model/EvidenceItem';
 import { CustodyLedgerModalComponent } from '../custody-ledger-modal/custody-ledger-modal.component';
 import { TransferModalComponent } from '../transfer-modal/transfer-modal.component';
+import { AiRedactorModalComponent } from '../ai-redactor-modal/ai-redactor-modal.component';
+import { CourtReviewModalComponent } from '../court-review-modal/court-review-modal.component';
 
 @Component({
   selector: 'app-documenti-tabella',
@@ -163,5 +165,33 @@ export class DocumentiTabellaComponent implements AfterViewInit, OnChanges {
         }
       });
     }
+  }
+
+  openAiRedactor(item: EvidenceItem): void {
+    const modalRef = this.modalService.open(AiRedactorModalComponent, {
+      size: 'lg',
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.evidenceItem = item;
+    modalRef.result.then((res) => {
+      if (res && res.redactedText) {
+        item.description = res.redactedText;
+        this.cdr.detectChanges();
+      }
+    }, () => {});
+  }
+
+  openCourtReview(item: EvidenceItem): void {
+    const modalRef = this.modalService.open(CourtReviewModalComponent, {
+      size: 'lg',
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.evidenceItem = item;
+  }
+
+  simulateTamperAlert(item: EvidenceItem): void {
+    this.integrityAlertMessage = `CRITICAL INTEGRITY FAILURE [SIMULATION / TEST]: Cryptographic hash mismatch on Exhibit ${item.evidenceTag}! Unauthorized bitstream modification detected in Evidence Vault. Incident logged in tamper ledger.`;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    this.cdr.detectChanges();
   }
 }

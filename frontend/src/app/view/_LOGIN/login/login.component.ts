@@ -113,6 +113,7 @@ export class LoginComponent {
       case 'INVESTIGATOR': email = 'investigator@evidlock.gov'; break;
       case 'CUSTODIAN':   email = 'custodian@evidlock.gov';   break;
       case 'AUDITOR':     email = 'auditor@evidlock.gov';     break;
+      case 'COURT':       email = 'court@evidlock.gov';       break;
     }
     this.loginForm.patchValue({ email, password });
     this.loginForm.markAsDirty();

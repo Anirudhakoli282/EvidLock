@@ -25,6 +25,9 @@ import { AddDocumentModalComponent } from './view/_DOCUMENTI/add-documento-modal
 import { CustodyLedgerModalComponent } from './view/_DOCUMENTI/custody-ledger-modal/custody-ledger-modal.component';
 import { TransferModalComponent } from './view/_DOCUMENTI/transfer-modal/transfer-modal.component';
 import { AcceptTransferModalComponent } from './view/_DOCUMENTI/accept-transfer-modal/accept-transfer-modal.component';
+import { AiRedactorModalComponent } from './view/_DOCUMENTI/ai-redactor-modal/ai-redactor-modal.component';
+import { CourtReviewModalComponent } from './view/_DOCUMENTI/court-review-modal/court-review-modal.component';
+import { OfflineQueueModalComponent } from './view/_DOCUMENTI/offline-queue-modal/offline-queue-modal.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbDatepickerConfig, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
@@ -91,6 +94,9 @@ import { NoDataComponent } from './view/GENERIC/no-data/no-data.component';
     CustodyLedgerModalComponent,
     TransferModalComponent,
     AcceptTransferModalComponent,
+    AiRedactorModalComponent,
+    CourtReviewModalComponent,
+    OfflineQueueModalComponent,
     AddDipendenteModalComponent,
     DipendentiTabellaComponent,
     AddDipendenteCorsoModalComponent,

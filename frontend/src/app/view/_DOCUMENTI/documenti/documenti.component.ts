@@ -2,9 +2,12 @@ import { Component, OnInit } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { AddDocumentModalComponent } from '../add-documento-modal/add-document-modal.component';
 import { AcceptTransferModalComponent } from '../accept-transfer-modal/accept-transfer-modal.component';
+import { OfflineQueueModalComponent } from '../offline-queue-modal/offline-queue-modal.component';
+import { CourtReviewModalComponent } from '../court-review-modal/court-review-modal.component';
 import { EvidenceService } from '../../../service/evidence/evidence.service';
 import { TransfersService } from '../../../service/transfers/transfers.service';
 import { AuthService } from '../../../service/auth/auth.service';
+import { OfflineSyncService } from '../../../service/offline-sync/offline-sync.service';
 import { EvidenceItem } from '../../../model/EvidenceItem';
 import { CustodyTransferRequest } from '../../../model/CustodyTransferRequest';
 
@@ -23,6 +26,8 @@ export class DocumentiComponent implements OnInit {
   totalCount: number = 0;
   legalHoldCount: number = 0;
   compromisedCount: number = 0;
+  isOnline: boolean = true;
+  offlineCount: number = 0;
 
   applyFilter(text: string): void {
     const q = text.toLowerCase().trim();
@@ -43,11 +48,22 @@ export class DocumentiComponent implements OnInit {
     private modalService: NgbModal,
     private evidenceService: EvidenceService,
     private transfersService: TransfersService,
-    public auth: AuthService
+    public auth: AuthService,
+    public offlineService: OfflineSyncService
   ) {}
 
   ngOnInit(): void {
     this.loadData();
+    this.isOnline = this.offlineService.isOnline;
+    this.offlineCount = this.offlineService.getPendingCount();
+
+    this.offlineService.isOnline$.subscribe(online => {
+      this.isOnline = online;
+    });
+
+    this.offlineService.queue$.subscribe(items => {
+      this.offlineCount = items.filter(i => !i.synced).length;
+    });
   }
 
   loadData(): void {
@@ -97,5 +113,26 @@ export class DocumentiComponent implements OnInit {
     modalRef.componentInstance.refreshData.subscribe(() => {
       this.loadData();
     });
+  }
+
+  openOfflineQueueModal(): void {
+    const modalRef = this.modalService.open(OfflineQueueModalComponent, {
+      size: 'lg',
+      backdrop: 'static'
+    });
+    modalRef.result.then((synced) => {
+      if (synced) {
+        this.loadData();
+      }
+    }, () => {});
+  }
+
+  openCourtReviewMode(item?: EvidenceItem): void {
+    const targetItem = item || (this.evidenceItems.length > 0 ? this.evidenceItems[0] : null);
+    const modalRef = this.modalService.open(CourtReviewModalComponent, {
+      size: 'lg',
+      backdrop: 'static'
+    });
+    modalRef.componentInstance.evidenceItem = targetItem;
   }
 }

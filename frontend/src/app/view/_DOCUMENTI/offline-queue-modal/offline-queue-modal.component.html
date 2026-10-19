@@ -1,0 +1,95 @@
+<div class="modal-header bg-navy text-white d-flex justify-content-between align-items-center" style="background-color: #0f2043;">
+  <div>
+    <h5 class="modal-title fw-bold text-white mb-0">
+      <i class="bi bi-wifi-off text-warning me-2"></i>Offline Remote Field Ingestion Queue
+    </h5>
+    <small class="text-white-50">Local Cryptographic Storage for Remote Crime Scene Evidence Capture</small>
+  </div>
+  <button type="button" class="btn-close btn-close-white" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body p-4 bg-light">
+
+  <!-- Network Status Banner -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-3 d-flex justify-content-between align-items-center" [ngClass]="isOnline ? 'bg-success-subtle text-success border border-success' : 'bg-warning-subtle text-dark border border-warning'">
+      <div class="d-flex align-items-center">
+        <i class="bi fs-3 me-3" [ngClass]="isOnline ? 'bi-wifi text-success' : 'bi-wifi-off text-warning'"></i>
+        <div>
+          <h6 class="fw-bold mb-0" *ngIf="isOnline">System Online: Network Connected</h6>
+          <h6 class="fw-bold mb-0" *ngIf="!isOnline">Field Mode: Low / No Network Connectivity</h6>
+          <small class="text-muted" *ngIf="isOnline">Ready to synchronize local offline captures with the central evidence vault.</small>
+          <small class="text-muted" *ngIf="!isOnline">Captures are cryptographically sealed in client storage and will auto-sync upon reconnection.</small>
+        </div>
+      </div>
+      <span class="badge" [ngClass]="isOnline ? 'bg-success' : 'bg-warning text-dark'">
+        {{ isOnline ? 'ONLINE' : 'OFFLINE' }}
+      </span>
+    </div>
+  </div>
+
+  <!-- Sync Success Alert -->
+  <div *ngIf="syncSuccess" class="alert alert-success d-flex align-items-center py-3 mb-3">
+    <i class="bi bi-check-circle-fill fs-4 text-success me-3"></i>
+    <div>
+      <h6 class="alert-heading fw-bold mb-0">Synchronization Complete!</h6>
+      <p class="mb-0 small">All pending field evidence exhibits have been ingested and sealed into the remote vault ledger.</p>
+    </div>
+  </div>
+
+  <!-- Queue Items List -->
+  <div class="card border-0 shadow-sm" *ngIf="!syncSuccess">
+    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+      <h6 class="fw-bold mb-0 text-dark">
+        <i class="bi bi-inboxes-fill text-primary me-2"></i>Pending Offline Exhibits ({{ items.length }})
+      </h6>
+      <span class="badge bg-secondary-subtle text-dark border">{{ items.length }} Queued</span>
+    </div>
+
+    <div class="card-body p-0">
+      <div *ngIf="items.length === 0" class="text-center py-5">
+        <i class="bi bi-cloud-check text-success fs-1 mb-2 d-block"></i>
+        <h6 class="fw-bold text-dark">Offline Queue is Clean</h6>
+        <p class="text-muted small mb-0">All field exhibits have been uploaded and cryptographically synced with the vault.</p>
+      </div>
+
+      <div class="list-group list-group-flush" *ngIf="items.length > 0">
+        <div *ngFor="let item of items" class="list-group-item p-3 d-flex justify-content-between align-items-center">
+          <div>
+            <div class="d-flex align-items-center mb-1">
+              <span class="badge bg-primary me-2">{{ item.evidenceTag }}</span>
+              <strong class="text-dark">{{ item.fileName }}</strong>
+              <span class="badge bg-light text-secondary border ms-2 small">{{ item.caseNumber }}</span>
+            </div>
+            <p class="text-muted small mb-1">{{ item.description }}</p>
+            <div class="text-muted small font-monospace">
+              <i class="bi bi-fingerprint text-primary me-1"></i>Hash: {{ item.simulatedHash.substring(0, 16) }}...
+              <span class="ms-3 text-secondary"><i class="bi bi-clock me-1"></i>Captured: {{ item.capturedAt | date:'medium' }}</span>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-outline-danger" (click)="removeItem(item.id)" title="Remove item">
+              <i class="bi bi-trash"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="modal-footer bg-light border-0 pt-0 d-flex justify-content-between">
+  <small class="text-muted">
+    <i class="bi bi-shield-check text-success me-1"></i>Offline items are protected by SHA-256 integrity seal
+  </small>
+  <div class="d-flex gap-2">
+    <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()">Close</button>
+    <button type="button" class="btn btn-primary fw-semibold shadow-sm" (click)="syncAllNow()" [disabled]="items.length === 0 || !isOnline || syncing">
+      <span *ngIf="syncing" class="spinner-border spinner-border-sm me-1"></span>
+      <i *ngIf="!syncing" class="bi bi-cloud-arrow-up-fill me-1"></i>
+      <span *ngIf="!syncing">Sync All Field Exhibits Now</span>
+      <span *ngIf="syncing">Encrypting & Synchronizing...</span>
+    </button>
+  </div>
+</div>

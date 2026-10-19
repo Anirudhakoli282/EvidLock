@@ -64,13 +64,18 @@
           </td>
         </ng-container>
 
-        <!-- SHA-256 Hash -->
+        <!-- SHA-256 Hash & AES-256 Cipher -->
         <ng-container matColumnDef="fileHash">
-          <th mat-header-cell *matHeaderCellDef class="text-uppercase text-secondary" style="font-size: 0.78rem;"> SHA-256 Checksum </th>
+          <th mat-header-cell *matHeaderCellDef class="text-uppercase text-secondary" style="font-size: 0.78rem;"> HASH & CIPHER </th>
           <td mat-cell *matCellDef="let row">
-            <span class="font-monospace text-muted bg-light border px-2 py-1 rounded small" style="font-size: 0.75rem;" [title]="row.fileHash">
-              {{ row.fileHash?.substring(0, 12) }}...
-            </span>
+            <div>
+              <span class="font-monospace text-muted bg-light border px-2 py-1 rounded small d-block mb-1" style="font-size: 0.72rem;" [title]="row.fileHash">
+                <i class="bi bi-fingerprint text-primary me-1"></i>{{ row.fileHash?.substring(0, 10) }}...
+              </span>
+              <span class="badge bg-primary-subtle text-primary border border-primary-subtle" style="font-size: 0.68rem;">
+                <i class="bi bi-shield-lock-fill me-1"></i>AES-256-GCM
+              </span>
+            </div>
           </td>
         </ng-container>
 
@@ -116,8 +121,18 @@
                 <i class="bi bi-link-45deg"></i> Ledger
               </button>
 
+              <!-- Court & Sec 65B Certificate Review -->
+              <button class="btn btn-outline-dark" (click)="openCourtReview(row)" title="Open Trial Court Admissibility & Section 65B Certificate">
+                <i class="bi bi-bank2 text-warning"></i> Sec. 65B
+              </button>
+
+              <!-- AI Classify & Auto-Redact -->
+              <button class="btn btn-outline-info text-dark" (click)="openAiRedactor(row)" title="AI Classify & Auto-Redact Sensitive Personal Identifiers (Aadhaar, PAN, Phone)">
+                <i class="bi bi-robot text-primary"></i> AI Redact
+              </button>
+
               <!-- Court-Ready PDF Report -->
-              <button class="btn btn-outline-secondary" (click)="downloadPdfReport(row)" title="Export Court-Ready PDF Report">
+              <button class="btn btn-outline-secondary" (click)="downloadPdfReport(row)" title="Export Section 65B Certified PDF Report">
                 <i class="bi bi-file-earmark-pdf text-danger"></i> PDF
               </button>
 
@@ -129,6 +144,11 @@
               <!-- Transfer Custody -->
               <button *ngIf="!auth.isReadOnly()" class="btn btn-outline-warning text-dark" (click)="openTransferModal(row)" title="Initiate Dual-Custody Transfer Request">
                 <i class="bi bi-arrow-left-right"></i>
+              </button>
+
+              <!-- Test Tamper Alert Simulation -->
+              <button class="btn btn-outline-danger" (click)="simulateTamperAlert(row)" title="Audit Simulation: Trigger Real-Time Tampering Alert">
+                <i class="bi bi-shield-slash"></i>
               </button>
 
               <!-- Delete (Supervisor only) -->

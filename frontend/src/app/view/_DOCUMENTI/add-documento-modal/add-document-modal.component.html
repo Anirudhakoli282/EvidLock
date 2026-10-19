@@ -17,15 +17,51 @@
 
   <form [formGroup]="evidenceForm" (ngSubmit)="submit()">
     <!-- Case Selection -->
+    <div class="row g-3 mb-3">
+      <div class="col-md-7">
+        <label class="form-label fw-semibold text-dark">Associated Case <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="caseId" [class.is-invalid]="evidenceForm.get('caseId')?.touched && evidenceForm.get('caseId')?.invalid">
+          <option value="" disabled selected>Select an active case...</option>
+          <option *ngFor="let c of cases" [value]="c.id">
+            {{ c.caseNumber }}: {{ c.title }} ({{ c.status }})
+          </option>
+        </select>
+        <div class="invalid-feedback">A case must be associated with the evidence.</div>
+      </div>
+
+      <!-- Evidence Category (Flowchart Box 2) -->
+      <div class="col-md-5">
+        <label class="form-label fw-semibold text-dark">Document Type / Category <span class="text-danger">*</span></label>
+        <select class="form-select" formControlName="category">
+          <option value="FIR">FIR (Sec. 154 CrPC)</option>
+          <option value="CHARGESHEET">Chargesheet (Sec. 173 CrPC)</option>
+          <option value="FORENSIC_DUMP">Forensic Clone / Image (E01/RAW)</option>
+          <option value="WIRETAP_AUDIO">Wiretap / VoIP Audio</option>
+          <option value="CCTV_FOOTAGE">CCTV Video Footage</option>
+          <option value="PHOTO_EXHIBIT">Crime Scene Photograph Exhibit</option>
+          <option value="FINANCIAL_LEDGER">Financial / Bank Record</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Evidence File Upload & AI Auto-Classifier (Flowchart Box 3 & 4) -->
     <div class="mb-3">
-      <label class="form-label fw-semibold text-dark">Associated Case <span class="text-danger">*</span></label>
-      <select class="form-select" formControlName="caseId" [class.is-invalid]="evidenceForm.get('caseId')?.touched && evidenceForm.get('caseId')?.invalid">
-        <option value="" disabled selected>Select an active case...</option>
-        <option *ngFor="let c of cases" [value]="c.id">
-          {{ c.caseNumber }}: {{ c.title }} ({{ c.status }})
-        </option>
-      </select>
-      <div class="invalid-feedback">A case must be associated with the evidence.</div>
+      <label class="form-label fw-semibold text-dark">Evidence File / Forensic Image <span class="text-danger">*</span></label>
+      <input type="file" class="form-control" (change)="onFileSelected($event)">
+      <div class="form-text small text-muted d-flex justify-content-between align-items-center mt-1">
+        <span><i class="bi bi-cpu me-1"></i>Automatic SHA-256 Bitstream Hash & AES-256-GCM Encryption Seal</span>
+        <span class="badge bg-primary-subtle text-primary border border-primary-subtle">AES-256-GCM Military Standard</span>
+      </div>
+
+      <!-- AI Auto-Classification Banner -->
+      <div *ngIf="aiClassification" class="alert alert-info py-2 px-3 mt-2 mb-0 d-flex justify-content-between align-items-center">
+        <div>
+          <i class="bi bi-robot text-primary me-2"></i>
+          <strong>AI Classified:</strong> {{ aiClassification.label }}
+          <span class="badge bg-success ms-2">{{ aiClassification.confidence }}% Confidence</span>
+        </div>
+        <small class="text-muted font-monospace">Suggested Retention: {{ aiClassification.suggestedRetentionYears }}y</small>
+      </div>
     </div>
 
     <!-- Evidence Tag -->
@@ -33,15 +69,24 @@
       <label class="form-label fw-semibold text-dark">Evidence Tracking Tag <span class="text-danger">*</span></label>
       <div class="input-group">
         <span class="input-group-text"><i class="bi bi-tag-fill"></i></span>
-        <input type="text" class="form-control" formControlName="evidenceTag" placeholder="e.g. EVD-2024-005" [class.is-invalid]="evidenceForm.get('evidenceTag')?.touched && evidenceForm.get('evidenceTag')?.invalid">
+        <input type="text" class="form-control font-monospace" formControlName="evidenceTag" placeholder="e.g. FIR-2024-101" [class.is-invalid]="evidenceForm.get('evidenceTag')?.touched && evidenceForm.get('evidenceTag')?.invalid">
       </div>
       <div class="invalid-feedback">Valid evidence tag identifier required (letters, numbers, dash).</div>
     </div>
 
-    <!-- Description -->
+    <!-- Description & AI Auto-Redactor (Flowchart Box 4) -->
     <div class="mb-3">
-      <label class="form-label fw-semibold text-dark">Evidence Description & Source <span class="text-danger">*</span></label>
-      <textarea class="form-control" rows="3" formControlName="description" placeholder="e.g., Forensic physical clone of Samsung Galaxy S22 retrieved from suspect vehicle..." [class.is-invalid]="evidenceForm.get('description')?.touched && evidenceForm.get('description')?.invalid"></textarea>
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <label class="form-label fw-semibold text-dark mb-0">Evidence Description & Source Details <span class="text-danger">*</span></label>
+        <button type="button" class="btn btn-sm btn-outline-info text-dark py-0 px-2 fw-semibold" (click)="triggerAiPiiRedaction()" [disabled]="!evidenceForm.value.description" title="Auto-detect & redact Aadhaar, PAN, phone numbers, and addresses">
+          <i class="bi bi-shield-shaded text-danger me-1"></i>AI Redact Sensitive PII
+        </button>
+      </div>
+      <textarea class="form-control" rows="3" formControlName="description" placeholder="e.g., Forensic physical clone of Samsung Galaxy S22 retrieved from suspect vehicle at Crawford Market..." [class.is-invalid]="evidenceForm.get('description')?.touched && evidenceForm.get('description')?.invalid"></textarea>
+      
+      <div *ngIf="piiRedactedMessage" class="alert alert-warning py-1 px-2 mt-1 mb-0 small">
+        <i class="bi bi-check-circle-fill text-success me-1"></i>{{ piiRedactedMessage }}
+      </div>
       <div class="invalid-feedback">Description must be at least 5 characters.</div>
     </div>
 
@@ -52,24 +97,27 @@
         <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
         <input type="date" class="form-control" formControlName="retentionDate" [class.is-invalid]="evidenceForm.get('retentionDate')?.touched && evidenceForm.get('retentionDate')?.invalid">
       </div>
-      <small class="text-muted">Evidence cannot be disposed before this date unless legally authorized.</small>
+      <small class="text-muted">Evidence cannot be disposed before this date unless legally authorized by court order.</small>
     </div>
 
-    <!-- Evidence File Upload -->
-    <div class="mb-3">
-      <label class="form-label fw-semibold text-dark">Evidence File / Forensic Image <span class="text-danger">*</span></label>
-      <input type="file" class="form-control" (change)="onFileSelected($event)">
-      <div class="form-text small text-muted">
-        <i class="bi bi-cpu me-1"></i>System will automatically calculate the SHA-256 checksum upon receipt to ensure tamper-evident seal.
+    <div class="modal-footer px-0 pb-0 pt-3 bg-light border-0 d-flex justify-content-between align-items-center">
+      <div class="small">
+        <span *ngIf="isOfflineMode || !offlineService.isOnline" class="badge bg-warning text-dark border border-warning">
+          <i class="bi bi-wifi-off me-1"></i>Offline Field Mode: Will save to local queue
+        </span>
+        <span *ngIf="!isOfflineMode && offlineService.isOnline" class="text-muted">
+          <i class="bi bi-shield-lock-fill text-success me-1"></i>Encrypted Ingestion (AES-256-GCM + SHA-256)
+        </span>
       </div>
-    </div>
-
-    <div class="modal-footer px-0 pb-0 pt-3 bg-light border-0">
-      <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()" [disabled]="loading">Cancel</button>
-      <button type="submit" class="btn btn-primary fw-semibold" [disabled]="evidenceForm.invalid || !selectedFile || loading">
-        <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
-        <i *ngIf="!loading" class="bi bi-shield-lock-fill me-1"></i>Ingest & Seal Evidence
-      </button>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-secondary" (click)="activeModal.dismiss()" [disabled]="loading">Cancel</button>
+        <button type="submit" class="btn btn-primary fw-semibold" [disabled]="evidenceForm.invalid || !selectedFile || loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-1"></span>
+          <i *ngIf="!loading" class="bi" [ngClass]="isOfflineMode || !offlineService.isOnline ? 'bi-cloud-plus-fill' : 'bi-shield-lock-fill'"></i>
+          <span *ngIf="!loading && (isOfflineMode || !offlineService.isOnline)">Queue in Offline Storage</span>
+          <span *ngIf="!loading && (!isOfflineMode && offlineService.isOnline)">Ingest & Seal Evidence</span>
+        </button>
+      </div>
     </div>
   </form>
 </div>

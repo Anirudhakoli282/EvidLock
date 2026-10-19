@@ -90,7 +90,8 @@ public class DBManager {
                 "('supervisor@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'ACP Rajesh Patil', 'MPD-SUP-101', 'SUPERVISOR', 'MPD-01', '+91-98201-10001', '36710385611'), " +
                 "('investigator@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'PI Priya Sharma', 'MPD-INV-402', 'INVESTIGATOR', 'MPD-01', '+91-98202-10002', '23267419900'), " +
                 "('custodian@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'Dr. Vikram Desai', 'SFL-CST-881', 'CUSTODIAN', 'SFL-02', '+91-98203-10003', '19833552187'), " +
-                "('auditor@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'Ananya Mehta', 'OIG-AUD-909', 'AUDITOR', 'OIG-04', '+91-98204-10004', '98714353456') " +
+                "('auditor@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'Ananya Mehta', 'OIG-AUD-909', 'AUDITOR', 'OIG-04', '+91-98204-10004', '98714353456'), " +
+                "('court@evidlock.gov', '$2a$10$tbkzB9DuvsrZp6/PpUkbN.mOUpaua5LIppshiL.FRGHMoXfx1e2re', 'Adv. Siddharth Deshmukh (Public Prosecutor)', 'CRT-PP-770', 'AUDITOR', 'DAO-03', '+91-98205-10005', '87612345901') " +
                 "ON CONFLICT (email) DO UPDATE SET password = EXCLUDED.password, role = EXCLUDED.role, name = EXCLUDED.name, agency_code = EXCLUDED.agency_code;"
             );
         } catch (Exception ignored) {
