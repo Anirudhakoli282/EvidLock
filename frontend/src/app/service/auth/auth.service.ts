@@ -128,6 +128,11 @@ export class AuthService {
     return this.getRole() === 'AUDITOR';
   }
 
+  isCourt(): boolean {
+    const r = this.getRole();
+    return r === 'COURT';
+  }
+
   isReadOnly(): boolean {
     return this.isAuditor();
   }

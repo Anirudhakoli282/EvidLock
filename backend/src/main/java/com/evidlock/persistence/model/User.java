@@ -196,4 +196,21 @@ public class User {
     public ResponseEntity<List<CertificationTraining>> getTrainings() {
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
+
+    // Controlled Removal Governance Operations (Default FORBIDDEN)
+    public ResponseEntity<String> requestEvidenceRemoval(Long evidenceId, String reason, String password, String legalRef) {
+        return new ResponseEntity<>("Unauthorized: Your role is not permitted to request evidence removal", HttpStatus.FORBIDDEN);
+    }
+
+    public ResponseEntity<EvidenceItem> approveEvidenceRemoval(Long evidenceId, String legalRef, String password) {
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+    public ResponseEntity<EvidenceItem> rejectEvidenceRemoval(Long evidenceId, String reason, String password) {
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+    public ResponseEntity<List<EvidenceItem>> getPendingRemovals() {
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
 }

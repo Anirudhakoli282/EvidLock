@@ -45,6 +45,33 @@ export class EvidenceService {
     return this.http.delete(`${Settings.API_ENDPOINT}evidence/${id}`, { headers: this.authService.getHeaders(), responseType: 'text' });
   }
 
+  requestRemoval(id: number, reason: string, password: string, legalRef?: string): Observable<string> {
+    return this.http.post(`${Settings.API_ENDPOINT}evidence/${id}/request-removal`, 
+      { reason, password, legalRef }, 
+      { headers: this.authService.getHeaders(), responseType: 'text' }
+    );
+  }
+
+  approveRemoval(id: number, legalRef: string, password: string): Observable<EvidenceItem> {
+    return this.http.post<EvidenceItem>(`${Settings.API_ENDPOINT}evidence/${id}/approve-removal`, 
+      { legalRef, password }, 
+      { headers: this.authService.getHeaders() }
+    );
+  }
+
+  rejectRemoval(id: number, reason: string, password: string): Observable<EvidenceItem> {
+    return this.http.post<EvidenceItem>(`${Settings.API_ENDPOINT}evidence/${id}/reject-removal`, 
+      { reason, password }, 
+      { headers: this.authService.getHeaders() }
+    );
+  }
+
+  getPendingRemovals(): Observable<EvidenceItem[]> {
+    return this.http.get<EvidenceItem[]>(`${Settings.API_ENDPOINT}evidence/pending-removals`, 
+      { headers: this.authService.getHeaders() }
+    );
+  }
+
   toggleLegalHold(id: number, hold: boolean): Observable<EvidenceItem> {
     return this.http.post<EvidenceItem>(`${Settings.API_ENDPOINT}evidence/${id}/legal-hold?hold=${hold}`, {}, { headers: this.authService.getHeaders() });
   }

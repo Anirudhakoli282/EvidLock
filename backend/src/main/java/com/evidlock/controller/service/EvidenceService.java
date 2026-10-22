@@ -3,6 +3,7 @@ package com.evidlock.controller.service;
 import com.evidlock.controller.Utility;
 import com.evidlock.persistence.DBManager;
 import com.evidlock.persistence.model.EvidenceItem;
+import com.evidlock.persistence.model.RemovalActionDto;
 import com.evidlock.persistence.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -69,6 +70,43 @@ public class EvidenceService {
         User user = Utility.getRequestUser(req);
         if (user == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
         return user.deleteEvidence(id);
+    }
+
+    @PostMapping("/evidence/{id}/request-removal")
+    public ResponseEntity<String> requestRemoval(
+            HttpServletRequest req,
+            @PathVariable Long id,
+            @RequestBody RemovalActionDto dto) {
+        User user = Utility.getRequestUser(req);
+        if (user == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return user.requestEvidenceRemoval(id, dto.getReason(), dto.getPassword(), dto.getLegalRef());
+    }
+
+    @PostMapping("/evidence/{id}/approve-removal")
+    public ResponseEntity<EvidenceItem> approveRemoval(
+            HttpServletRequest req,
+            @PathVariable Long id,
+            @RequestBody RemovalActionDto dto) {
+        User user = Utility.getRequestUser(req);
+        if (user == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return user.approveEvidenceRemoval(id, dto.getLegalRef(), dto.getPassword());
+    }
+
+    @PostMapping("/evidence/{id}/reject-removal")
+    public ResponseEntity<EvidenceItem> rejectRemoval(
+            HttpServletRequest req,
+            @PathVariable Long id,
+            @RequestBody RemovalActionDto dto) {
+        User user = Utility.getRequestUser(req);
+        if (user == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return user.rejectEvidenceRemoval(id, dto.getReason(), dto.getPassword());
+    }
+
+    @GetMapping("/evidence/pending-removals")
+    public ResponseEntity<List<EvidenceItem>> getPendingRemovals(HttpServletRequest req) {
+        User user = Utility.getRequestUser(req);
+        if (user == null) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        return user.getPendingRemovals();
     }
 
     @PostMapping("/evidence/{id}/legal-hold")

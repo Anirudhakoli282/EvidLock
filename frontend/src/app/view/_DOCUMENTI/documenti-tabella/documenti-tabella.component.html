@@ -24,9 +24,17 @@
                 <i class="bi bi-shield-shaded"></i>
               </span>
               <div>
-                <a type="button" class="fw-bold text-dark text-decoration-none" (click)="openLedgerModal(row)">
-                  {{ row.evidenceTag }}
-                </a>
+                <div class="d-flex align-items-center gap-1">
+                  <a type="button" class="fw-bold text-dark text-decoration-none" (click)="openLedgerModal(row)">
+                    {{ row.evidenceTag }}
+                  </a>
+                  <span *ngIf="row.status === 'REMOVED'" class="badge bg-danger ms-1" [title]="'REMOVED by ' + (row.removalApprovedBy || 'Court') + ' | Ref: ' + (row.legalRef || 'N/A') + ' | Reason: ' + (row.removalReason || '')">
+                    <i class="bi bi-shield-x me-1"></i>REMOVED
+                  </span>
+                  <span *ngIf="row.status === 'REMOVAL_REQUESTED'" class="badge bg-warning text-dark ms-1" [title]="'Disposal pending court review | Req by: ' + (row.removalRequestedBy || 'Supervisor') + ' | Reason: ' + (row.removalReason || '')">
+                    <i class="bi bi-hourglass-split me-1"></i>PENDING REMOVAL
+                  </span>
+                </div>
                 <div class="text-muted small">#{{ row.id }}</div>
               </div>
             </div>
@@ -136,24 +144,34 @@
                 <i class="bi bi-file-earmark-pdf text-danger"></i> PDF
               </button>
 
-              <!-- Download Evidence File (with real-time integrity verification) -->
-              <button class="btn btn-outline-secondary" (click)="downloadEvidenceFile(row)" title="Download file (Verifies SHA-256 hash on retrieval)">
-                <i class="bi bi-download text-primary"></i>
+              <!-- AI Classify & Auto-Redact (disabled for REMOVED) -->
+              <button class="btn btn-outline-info text-dark" (click)="openAiRedactor(row)" [disabled]="row.status === 'REMOVED'" title="AI Classify & Auto-Redact Sensitive Personal Identifiers">
+                <i class="bi bi-robot text-primary"></i> AI Redact
               </button>
 
-              <!-- Transfer Custody -->
-              <button *ngIf="!auth.isReadOnly()" class="btn btn-outline-warning text-dark" (click)="openTransferModal(row)" title="Initiate Dual-Custody Transfer Request">
+              <!-- Download Evidence File (disabled for REMOVED) -->
+              <button class="btn btn-outline-secondary" (click)="downloadEvidenceFile(row)" [disabled]="row.status === 'REMOVED'" [title]="row.status === 'REMOVED' ? 'Download disabled: binary payload purged or archived' : 'Download file (Verifies SHA-256 hash on retrieval)'">
+                <i class="bi bi-download" [ngClass]="row.status === 'REMOVED' ? 'text-muted' : 'text-primary'"></i>
+              </button>
+
+              <!-- Transfer Custody (disabled for REMOVED or REMOVAL_REQUESTED) -->
+              <button *ngIf="!auth.isReadOnly()" class="btn btn-outline-warning text-dark" (click)="openTransferModal(row)" [disabled]="row.status === 'REMOVED' || row.status === 'REMOVAL_REQUESTED'" [title]="row.status === 'REMOVED' ? 'Transfer disabled for removed exhibits' : (row.status === 'REMOVAL_REQUESTED' ? 'Transfer blocked during pending removal review' : 'Initiate Dual-Custody Transfer Request')">
                 <i class="bi bi-arrow-left-right"></i>
               </button>
 
               <!-- Test Tamper Alert Simulation -->
-              <button class="btn btn-outline-danger" (click)="simulateTamperAlert(row)" title="Audit Simulation: Trigger Real-Time Tampering Alert">
+              <button class="btn btn-outline-danger" (click)="simulateTamperAlert(row)" [disabled]="row.status === 'REMOVED'" title="Audit Simulation: Trigger Real-Time Tampering Alert">
                 <i class="bi bi-shield-slash"></i>
               </button>
 
-              <!-- Delete (Supervisor only) -->
-              <button *ngIf="auth.isSupervisor()" class="btn btn-outline-danger" (click)="deleteEvidence(row)" [disabled]="row.legalHold" title="Purge Record (Disabled under Legal Hold)">
-                <i class="bi bi-trash"></i>
+              <!-- Court Judicial Review (Court role only, when REMOVAL_REQUESTED) -->
+              <button *ngIf="auth.isCourt() && row.status === 'REMOVAL_REQUESTED'" class="btn btn-warning text-dark fw-semibold" (click)="openReviewRemovalModal(row)" title="Court Officer Review: Approve or Reject Disposal">
+                <i class="bi bi-bank2 me-1"></i> Review Disposal
+              </button>
+
+              <!-- Request Removal (Supervisor only, replaces hard delete) -->
+              <button *ngIf="auth.isSupervisor() && row.status !== 'REMOVED'" class="btn btn-outline-danger" (click)="openRequestRemovalModal(row)" [disabled]="row.legalHold || row.status === 'REMOVAL_REQUESTED' || row.integrityStatus === 'COMPROMISED'" [title]="row.status === 'REMOVAL_REQUESTED' ? 'Removal request already pending review' : (row.legalHold ? 'Disposal blocked by active Legal Hold' : 'Request Evidence Removal & Disposal')">
+                <i class="bi bi-shield-x me-1"></i> Request Removal
               </button>
             </div>
           </td>

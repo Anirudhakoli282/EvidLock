@@ -117,6 +117,8 @@ public class UserAuditor extends User {
         m.put("compromisedCount", DBManager.getInstance().getEvidenceItemDao().findIntegrityCompromised().size());
         m.put("nearingRetentionCount", DBManager.getInstance().getEvidenceItemDao().findNearingRetention(30).size());
         m.put("disposalEligibleCount", DBManager.getInstance().getEvidenceItemDao().findEligibleForDisposal().size());
+        m.put("pendingRemovalsCount", DBManager.getInstance().getEvidenceItemDao().findPendingRemovals().size());
+        m.put("removedCount", DBManager.getInstance().getEvidenceItemDao().findRemoved().size());
         m.put("recentEvents", DBManager.getInstance().getCustodyEventDao().findRecent(20));
         m.put("pendingTransfersCount", DBManager.getInstance().getCustodyTransferRequestDao().getAllPending().size());
 

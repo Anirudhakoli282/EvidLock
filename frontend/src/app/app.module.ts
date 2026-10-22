@@ -28,6 +28,8 @@ import { AcceptTransferModalComponent } from './view/_DOCUMENTI/accept-transfer-
 import { AiRedactorModalComponent } from './view/_DOCUMENTI/ai-redactor-modal/ai-redactor-modal.component';
 import { CourtReviewModalComponent } from './view/_DOCUMENTI/court-review-modal/court-review-modal.component';
 import { OfflineQueueModalComponent } from './view/_DOCUMENTI/offline-queue-modal/offline-queue-modal.component';
+import { RequestRemovalModalComponent } from './view/_DOCUMENTI/request-removal-modal/request-removal-modal.component';
+import { ReviewRemovalModalComponent } from './view/_DOCUMENTI/review-removal-modal/review-removal-modal.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { NgbDatepickerConfig, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
@@ -97,6 +99,8 @@ import { NoDataComponent } from './view/GENERIC/no-data/no-data.component';
     AiRedactorModalComponent,
     CourtReviewModalComponent,
     OfflineQueueModalComponent,
+    RequestRemovalModalComponent,
+    ReviewRemovalModalComponent,
     AddDipendenteModalComponent,
     DipendentiTabellaComponent,
     AddDipendenteCorsoModalComponent,

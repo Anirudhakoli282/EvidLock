@@ -1,0 +1,126 @@
+<div class="modal-header bg-dark text-white border-bottom">
+  <div class="d-flex align-items-center">
+    <div class="rounded-circle bg-warning text-dark p-2 me-2">
+      <i class="bi bi-bank2 fs-5"></i>
+    </div>
+    <div>
+      <h5 class="modal-title fw-bold mb-0">Judicial Review & Disposal Approval</h5>
+      <span class="small text-secondary">Four-Eyes Independent Authority Verification</span>
+    </div>
+  </div>
+  <button type="button" class="btn-close btn-close-white" aria-label="Close" (click)="activeModal.dismiss()"></button>
+</div>
+
+<div class="modal-body p-4">
+  <!-- Governance banner -->
+  <div class="alert alert-dark border-secondary d-flex align-items-center p-3 mb-3">
+    <i class="bi bi-shield-check fs-3 me-3 text-warning"></i>
+    <div class="small">
+      <strong>Independent Separation of Powers:</strong> Under ISO 27037 and Indian Evidence Act / BSA 63 standards, evidence cannot be purged by investigators, custodians, or supervisors. Approval seals the file into cold storage and preserves the cryptographic tombstone.
+    </div>
+  </div>
+
+  <!-- Evidence Details -->
+  <div class="card bg-light border mb-3">
+    <div class="card-body p-3">
+      <div class="row g-2 small">
+        <div class="col-sm-6">
+          <span class="text-muted">Exhibit:</span> <strong>{{ item.evidenceTag }} (#{{ item.id }})</strong>
+        </div>
+        <div class="col-sm-6">
+          <span class="text-muted">Case:</span> <strong>{{ item.caseNumber || ('Case #' + item.caseId) }}</strong>
+        </div>
+        <div class="col-sm-6">
+          <span class="text-muted">Current Custodian:</span> <span>{{ item.currentCustodianId }}</span>
+        </div>
+        <div class="col-sm-6">
+          <span class="text-muted">Retention Date:</span> <span>{{ item.retentionDate || 'N/A' }}</span>
+        </div>
+        <div class="col-12">
+          <span class="text-muted">SHA-256 Hash:</span> 
+          <span class="font-monospace text-truncate d-inline-block align-bottom" style="max-width: 320px;" [title]="item.fileHash">
+            {{ item.fileHash }}
+          </span>
+        </div>
+        <div class="col-sm-6">
+          <span class="text-muted">Requested By:</span> <strong class="text-primary">{{ item.removalRequestedBy || 'Supervisor' }}</strong>
+        </div>
+        <div class="col-sm-6">
+          <span class="text-muted">Requested At:</span> <span>{{ item.removalRequestedAt | date:'medium' }}</span>
+        </div>
+        <div class="col-12 mt-2">
+          <span class="text-muted d-block">Supervisor Justification:</span>
+          <div class="p-2 bg-white border rounded text-dark mt-1 font-monospace small">
+            {{ item.removalReason }}
+          </div>
+        </div>
+        <div class="col-12 mt-1" *ngIf="item.legalRef">
+          <span class="text-muted">Provided Legal Ref:</span>
+          <span class="badge bg-secondary-subtle text-dark border ms-1">{{ item.legalRef }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alerts -->
+  <div *ngIf="errorMessage" class="alert alert-danger py-2 px-3 small mb-3">
+    <i class="bi bi-exclamation-triangle-fill me-1"></i>{{ errorMessage }}
+  </div>
+
+  <div *ngIf="successMessage" class="alert alert-success py-2 px-3 small mb-3">
+    <i class="bi bi-check-circle-fill me-1"></i>{{ successMessage }}
+  </div>
+
+  <form [formGroup]="reviewForm">
+    <!-- Mandatory Legal Reference -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold small mb-1">
+        Mandatory Statutory / Court Legal Reference <span class="text-danger">*</span>
+      </label>
+      <input type="text" class="form-control form-control-sm" formControlName="legalRef"
+        placeholder="e.g. Court Order No. HC/2026/918 or Section 452 BNSS Mandate">
+      <div class="form-text small text-muted">
+        Statutory authority authorizing evidence disposal. Logged permanently in the cryptographic hash chain.
+      </div>
+    </div>
+
+    <!-- Review Notes / Disposal Reason -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold small mb-1">
+        Court Review Findings / Disposition Reason <span class="text-danger">*</span>
+      </label>
+      <textarea class="form-control form-control-sm" rows="2" formControlName="reason"
+        placeholder="Enter court officer findings, disposal confirmation, or reason for rejection..."></textarea>
+    </div>
+
+    <!-- Password Confirmation -->
+    <div class="mb-3">
+      <label class="form-label fw-semibold small mb-1">Court Officer Password Re-Entry <span class="text-danger">*</span></label>
+      <div class="input-group input-group-sm">
+        <span class="input-group-text"><i class="bi bi-key-fill text-muted"></i></span>
+        <input type="password" class="form-control" formControlName="password"
+          placeholder="Enter court officer password to digitally sign disposition">
+      </div>
+    </div>
+
+    <div class="modal-footer px-0 pb-0 pt-3 d-flex justify-content-between">
+      <button type="button" class="btn btn-outline-secondary btn-sm" (click)="activeModal.dismiss()" [disabled]="loading">Cancel</button>
+      
+      <div class="d-flex gap-2">
+        <!-- Reject Button -->
+        <button type="button" class="btn btn-outline-danger btn-sm fw-semibold" (click)="rejectDisposal()" [disabled]="loading">
+          <span *ngIf="loading && actionType === 'reject'" class="spinner-border spinner-border-sm me-1" role="status"></span>
+          <i *ngIf="!loading || actionType !== 'reject'" class="bi bi-x-circle me-1"></i>
+          Reject Removal
+        </button>
+
+        <!-- Approve Button -->
+        <button type="button" class="btn btn-danger btn-sm fw-semibold" (click)="approveDisposal()" [disabled]="reviewForm.invalid || loading">
+          <span *ngIf="loading && actionType === 'approve'" class="spinner-border spinner-border-sm me-1" role="status"></span>
+          <i *ngIf="!loading || actionType !== 'approve'" class="bi bi-shield-check me-1"></i>
+          Approve & Seal Tombstone
+        </button>
+      </div>
+    </div>
+  </form>
+</div>
