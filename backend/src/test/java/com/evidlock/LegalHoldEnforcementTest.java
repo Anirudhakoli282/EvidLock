@@ -39,8 +39,7 @@ public class LegalHoldEnforcementTest {
     @Test
     @DisplayName("Verify legal hold can be toggled by supervisor and protection dynamically responds")
     public void testLegalHoldToggleDynamicallyEnforcesLock() {
-        // Reset item 3 to clean initial state: legal_hold = false
-        DBManager.getInstance().getEvidenceItemDao().updateLegalHold(3L, false);
+        // Item 3 starts with legal_hold = false
         EvidenceItem item3 = DBManager.getInstance().getEvidenceItemDao().findById(3L);
         Assertions.assertNotNull(item3);
         Assertions.assertFalse(item3.isLegalHold());

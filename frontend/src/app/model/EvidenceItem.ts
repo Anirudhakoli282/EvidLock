@@ -18,14 +18,6 @@ export interface EvidenceItem {
   retentionDate?: string;
   agencyCode?: string;
 
-  // Controlled Removal Governance fields
-  removalRequestedBy?: string;
-  removalApprovedBy?: string;
-  removalReason?: string;
-  legalRef?: string;
-  removalRequestedAt?: string | Date;
-  removedAt?: string | Date;
-
   // Compatibility aliases
   nome?: string;
   stato?: string;

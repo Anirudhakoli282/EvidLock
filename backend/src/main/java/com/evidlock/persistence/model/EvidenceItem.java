@@ -17,19 +17,11 @@ public class EvidenceItem {
     private String uploadedBy;
     private Timestamp uploadedAt;
     private String currentCustodianId;
-    private String status; // 'Collected', 'In Custody', 'Under Analysis', 'Released', 'Disposed', 'REMOVAL_REQUESTED', 'REMOVED'
+    private String status; // 'Collected', 'In Custody', 'Under Analysis', 'Released', 'Disposed'
     private boolean legalHold;
     private String integrityStatus; // 'VERIFIED', 'COMPROMISED'
     private Date retentionDate;
     private String agencyCode;
-
-    // Controlled Removal Governance fields
-    private String removalRequestedBy;
-    private String removalApprovedBy;
-    private String removalReason;
-    private String legalRef;
-    private Timestamp removalRequestedAt;
-    private Timestamp removedAt;
 
     public EvidenceItem() {
         this.status = "Collected";
@@ -179,54 +171,6 @@ public class EvidenceItem {
 
     public void setAgencyCode(String agencyCode) {
         this.agencyCode = agencyCode;
-    }
-
-    public String getRemovalRequestedBy() {
-        return removalRequestedBy;
-    }
-
-    public void setRemovalRequestedBy(String removalRequestedBy) {
-        this.removalRequestedBy = removalRequestedBy;
-    }
-
-    public String getRemovalApprovedBy() {
-        return removalApprovedBy;
-    }
-
-    public void setRemovalApprovedBy(String removalApprovedBy) {
-        this.removalApprovedBy = removalApprovedBy;
-    }
-
-    public String getRemovalReason() {
-        return removalReason;
-    }
-
-    public void setRemovalReason(String removalReason) {
-        this.removalReason = removalReason;
-    }
-
-    public String getLegalRef() {
-        return legalRef;
-    }
-
-    public void setLegalRef(String legalRef) {
-        this.legalRef = legalRef;
-    }
-
-    public Timestamp getRemovalRequestedAt() {
-        return removalRequestedAt;
-    }
-
-    public void setRemovalRequestedAt(Timestamp removalRequestedAt) {
-        this.removalRequestedAt = removalRequestedAt;
-    }
-
-    public Timestamp getRemovedAt() {
-        return removedAt;
-    }
-
-    public void setRemovedAt(Timestamp removedAt) {
-        this.removedAt = removedAt;
     }
 
     // Compatibility getters/setters for legacy UI

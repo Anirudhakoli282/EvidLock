@@ -193,10 +193,6 @@ public class UserInvestigator extends User {
         EvidenceItem item = DBManager.getInstance().getEvidenceItemDao().findById(dto.getEvidenceItemId());
         if (item == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        if ("REMOVED".equalsIgnoreCase(item.getStatus()) || "REMOVAL_REQUESTED".equalsIgnoreCase(item.getStatus())) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
         // Investigator can only transfer evidence currently in their custody
         if (!this.email.equalsIgnoreCase(item.getCurrentCustodianId())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -284,8 +280,6 @@ public class UserInvestigator extends User {
         m.put("totalEvidence", evidence.size());
         m.put("myCustodyCount", evidence.stream().filter(e -> this.email.equalsIgnoreCase(e.getCurrentCustodianId())).count());
         m.put("legalHoldCount", evidence.stream().filter(EvidenceItem::isLegalHold).count());
-        m.put("pendingRemovalsCount", DBManager.getInstance().getEvidenceItemDao().findPendingRemovals().size());
-        m.put("removedCount", DBManager.getInstance().getEvidenceItemDao().findRemoved().size());
         m.put("recentEvents", DBManager.getInstance().getCustodyEventDao().findRecent(10));
         m.put("pendingTransfersCount", DBManager.getInstance().getCustodyTransferRequestDao().findPendingForCustodian(this.email).size());
 

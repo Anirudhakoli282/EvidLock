@@ -33,7 +33,7 @@ public class ReportService {
         HashChainService.getInstance().logEvent(
                 evidenceId,
                 user.getEmail(),
-                "REPORT_EXPORTED",
+                "VIEWED",
                 item.getCurrentCustodianId(),
                 item.getCurrentCustodianId(),
                 "Official court-ready Chain of Custody PDF report exported by " + user.getName() + " (" + user.getRole() + ")"

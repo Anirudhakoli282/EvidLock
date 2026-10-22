@@ -96,23 +96,6 @@ public class PdfReportService {
             document.add(sealTable);
             document.add(new Paragraph("\n"));
 
-            // Distinct banner if item is REMOVED
-            if ("REMOVED".equalsIgnoreCase(item.getStatus())) {
-                PdfPTable removedTable = new PdfPTable(1);
-                removedTable.setWidthPercentage(100);
-                PdfPCell remCell = new PdfPCell();
-                remCell.setPadding(8);
-                remCell.setBackgroundColor(new Color(139, 0, 0));
-                String dateStr = item.getRemovedAt() != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(item.getRemovedAt()) : "Recorded Date";
-                Paragraph remText = new Paragraph("EVIDENCE STATUS: REMOVED / DISPOSED PURSUANT TO COURT ORDER\n" +
-                        "Evidence payload sealed/purged on " + dateStr + " | Cryptographic SHA-256 Tombstone & Ledger Preserved", badgeFont);
-                remText.setAlignment(Element.ALIGN_CENTER);
-                remCell.addElement(remText);
-                removedTable.addCell(remCell);
-                document.add(removedTable);
-                document.add(new Paragraph("\n"));
-            }
-
             // 3. Evidence & Case Metadata Table
             Paragraph sec1 = new Paragraph("1. EVIDENCE SPECIFICATIONS & CASE INFORMATION", sectionFont);
             document.add(sec1);
@@ -135,7 +118,7 @@ public class PdfReportService {
             addMetaCell(metaTable, "Current Custodian:", boldFont, lightBg, borderGray);
             addMetaCell(metaTable, item.getCurrentCustodianId(), bodyFont, Color.WHITE, borderGray);
             addMetaCell(metaTable, "Custody Status:", boldFont, lightBg, borderGray);
-            addMetaCell(metaTable, item.getStatus() != null ? item.getStatus() : "Active", bodyFont, Color.WHITE, borderGray);
+            addMetaCell(metaTable, item.getStatus(), bodyFont, Color.WHITE, borderGray);
 
             addMetaCell(metaTable, "Legal Hold Active:", boldFont, lightBg, borderGray);
             addMetaCell(metaTable, item.isLegalHold() ? "YES (LOCKED)" : "NO", bodyFont, Color.WHITE, borderGray);
@@ -227,71 +210,9 @@ public class PdfReportService {
             document.add(logTable);
             document.add(new Paragraph("\n"));
 
-            // Section: Removal / Disposal History
-            Paragraph secDisposal = new Paragraph("3. CONTROLLED REMOVAL & DISPOSAL HISTORY", sectionFont);
-            document.add(secDisposal);
-            document.add(new Paragraph(" "));
-
-            PdfPTable dispTable = new PdfPTable(4);
-            dispTable.setWidthPercentage(100);
-            dispTable.setWidths(new float[]{24f, 26f, 24f, 26f});
-
-            addMetaCell(dispTable, "Removal Status:", boldFont, lightBg, borderGray);
-            addMetaCell(dispTable, item.getStatus() != null ? item.getStatus() : "ACTIVE", bodyFont, Color.WHITE, borderGray);
-            addMetaCell(dispTable, "Legal Order Ref:", boldFont, lightBg, borderGray);
-            addMetaCell(dispTable, item.getLegalRef() != null ? item.getLegalRef() : "N/A", bodyFont, Color.WHITE, borderGray);
-
-            addMetaCell(dispTable, "Requested By:", boldFont, lightBg, borderGray);
-            addMetaCell(dispTable, item.getRemovalRequestedBy() != null ? item.getRemovalRequestedBy() : "N/A", bodyFont, Color.WHITE, borderGray);
-            addMetaCell(dispTable, "Requested Date:", boldFont, lightBg, borderGray);
-            String reqDateStr = item.getRemovalRequestedAt() != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(item.getRemovalRequestedAt()) : "N/A";
-            addMetaCell(dispTable, reqDateStr, bodyFont, Color.WHITE, borderGray);
-
-            addMetaCell(dispTable, "Approved By (Court):", boldFont, lightBg, borderGray);
-            addMetaCell(dispTable, item.getRemovalApprovedBy() != null ? item.getRemovalApprovedBy() : "N/A", bodyFont, Color.WHITE, borderGray);
-            addMetaCell(dispTable, "Disposal Date:", boldFont, lightBg, borderGray);
-            String remDateStr = item.getRemovedAt() != null ? new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(item.getRemovedAt()) : "N/A";
-            addMetaCell(dispTable, remDateStr, bodyFont, Color.WHITE, borderGray);
-
-            addMetaCell(dispTable, "Disposal Reason:", boldFont, lightBg, borderGray);
-            PdfPCell reasonCell = new PdfPCell(new Phrase(item.getRemovalReason() != null ? item.getRemovalReason() : "N/A", bodyFont));
-            reasonCell.setColspan(3);
-            reasonCell.setBackgroundColor(Color.WHITE);
-            reasonCell.setBorderColor(borderGray);
-            reasonCell.setPadding(5);
-            dispTable.addCell(reasonCell);
-
-            addMetaCell(dispTable, "Preserved Hash Digest:", boldFont, lightBg, borderGray);
-            PdfPCell hashPresCell = new PdfPCell(new Phrase(item.getFileHash() + " (Tombstone Record Preserved)", codeFont));
-            hashPresCell.setColspan(3);
-            hashPresCell.setBackgroundColor(Color.WHITE);
-            hashPresCell.setBorderColor(borderGray);
-            hashPresCell.setPadding(5);
-            dispTable.addCell(hashPresCell);
-
-            addMetaCell(dispTable, "Ledger Verification:", boldFont, lightBg, borderGray);
-            PdfPCell verCell = new PdfPCell(new Phrase(verification.isValid() ? "VERIFIED (Full cryptographic chain unbroken through disposal events)" : "COMPROMISED", boldFont));
-            verCell.setColspan(3);
-            verCell.setBackgroundColor(Color.WHITE);
-            verCell.setBorderColor(borderGray);
-            verCell.setPadding(5);
-            dispTable.addCell(verCell);
-
-            document.add(dispTable);
-            document.add(new Paragraph("\n"));
-
             // 5. Judicial Attestation & Signature Block
-            Paragraph sec3 = new Paragraph("4. STATUTORY EVIDENTIARY ATTESTATION (SEC. 65B EVIDENCE ACT & SEC. 63 BSA)", sectionFont);
+            Paragraph sec3 = new Paragraph("3. STATUTORY EVIDENTIARY ATTESTATION (SEC. 65B EVIDENCE ACT & SEC. 63 BSA)", sectionFont);
             document.add(sec3);
-
-            String removalAttestation = "";
-            if ("REMOVED".equalsIgnoreCase(item.getStatus())) {
-                removalAttestation = "5. TODO: [Review by Legal Counsel] This digital evidence item was decommissioned pursuant to authorized court/statutory removal procedure on " +
-                        (item.getRemovedAt() != null ? new SimpleDateFormat("yyyy-MM-dd").format(item.getRemovedAt()) : "recorded date") +
-                        " under Legal Ref: " + (item.getLegalRef() != null ? item.getLegalRef() : "N/A") +
-                        ". The cryptographic SHA-256 master bitstream digest [" + item.getFileHash() + "] and append-only chain of custody are permanently preserved.\n\n";
-            }
-
             Paragraph certText = new Paragraph(
                     "I hereby solemnly declare and certify under Section 65B of the Indian Evidence Act, 1872 and Section 63 of Bharatiya " +
                     "Sakshya Adhiniyam, 2023 that:\n" +
@@ -299,8 +220,7 @@ public class PdfReportService {
                     "used regularly to store or process digital evidence for the purposes of forensic activities carried out by the investigating agency.\n" +
                     "2. Throughout the said period, information of the kind contained in the electronic record was regularly fed into the computer in the ordinary course of activities.\n" +
                     "3. Throughout the material part of the said period, the computer was operating properly and without malfunction affecting electronic custody records.\n" +
-                    "4. The digital evidence has been cryptographically sealed using SHA-256 bitstream hash digest and AES-256-GCM cipher standards, verified against the tamper-evident ledger.\n\n" +
-                    removalAttestation,
+                    "4. The digital evidence has been cryptographically sealed using SHA-256 bitstream hash digest and AES-256-GCM cipher standards, verified against the tamper-evident ledger.\n\n",
                     FontFactory.getFont(FontFactory.HELVETICA_OBLIQUE, 8, Color.DARK_GRAY)
             );
             document.add(certText);

@@ -145,10 +145,6 @@ public class UserCustodian extends User {
         EvidenceItem item = DBManager.getInstance().getEvidenceItemDao().findById(dto.getEvidenceItemId());
         if (item == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-        if ("REMOVED".equalsIgnoreCase(item.getStatus()) || "REMOVAL_REQUESTED".equalsIgnoreCase(item.getStatus())) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
-
         CustodyTransferRequest req = new CustodyTransferRequest();
         req.setEvidenceItemId(item.getId());
         req.setFromCustodianId(this.email);
@@ -228,8 +224,6 @@ public class UserCustodian extends User {
         m.put("underAnalysis", all.stream().filter(e -> "Under Analysis".equalsIgnoreCase(e.getStatus())).count());
         m.put("legalHoldCount", all.stream().filter(EvidenceItem::isLegalHold).count());
         m.put("pendingTransfersCount", DBManager.getInstance().getCustodyTransferRequestDao().findPendingForCustodian(this.email).size());
-        m.put("pendingRemovalsCount", DBManager.getInstance().getEvidenceItemDao().findPendingRemovals().size());
-        m.put("removedCount", DBManager.getInstance().getEvidenceItemDao().findRemoved().size());
         m.put("recentEvents", DBManager.getInstance().getCustodyEventDao().findRecent(10));
         return new ResponseEntity<>(m, HttpStatus.OK);
     }

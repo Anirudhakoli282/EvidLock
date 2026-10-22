@@ -11,8 +11,6 @@ import { CustodyLedgerModalComponent } from '../custody-ledger-modal/custody-led
 import { TransferModalComponent } from '../transfer-modal/transfer-modal.component';
 import { AiRedactorModalComponent } from '../ai-redactor-modal/ai-redactor-modal.component';
 import { CourtReviewModalComponent } from '../court-review-modal/court-review-modal.component';
-import { RequestRemovalModalComponent } from '../request-removal-modal/request-removal-modal.component';
-import { ReviewRemovalModalComponent } from '../review-removal-modal/review-removal-modal.component';
 
 @Component({
   selector: 'app-documenti-tabella',
@@ -147,44 +145,26 @@ export class DocumentiTabellaComponent implements AfterViewInit, OnChanges {
     });
   }
 
-  openRequestRemovalModal(item: EvidenceItem): void {
+  deleteEvidence(item: EvidenceItem): void {
     if (!this.auth.isSupervisor()) {
-      alert('Unauthorized: Only supervisors may request evidence removal.');
+      alert('Unauthorized: Only supervisors may purge evidence records.');
       return;
     }
     if (item.legalHold) {
-      alert(`LOCKED BY LEGAL HOLD: Item ${item.evidenceTag} is under active legal hold and cannot be removed.`);
-      return;
-    }
-    if (item.integrityStatus === 'COMPROMISED') {
-      alert(`COMPROMISED EVIDENCE: Item ${item.evidenceTag} failed cryptographic integrity. Tampered evidence must be preserved as proof and cannot be removed.`);
+      alert(`LOCKED BY LEGAL HOLD: Item ${item.evidenceTag} is under active legal hold and cannot be deleted.`);
       return;
     }
 
-    const modalRef = this.modalService.open(RequestRemovalModalComponent, {
-      size: 'lg',
-      backdrop: 'static'
-    });
-    modalRef.componentInstance.item = item;
-    modalRef.componentInstance.refreshData.subscribe(() => {
-      this.refreshData.emit();
-    });
-  }
-
-  openReviewRemovalModal(item: EvidenceItem): void {
-    const modalRef = this.modalService.open(ReviewRemovalModalComponent, {
-      size: 'lg',
-      backdrop: 'static'
-    });
-    modalRef.componentInstance.item = item;
-    modalRef.componentInstance.refreshData.subscribe(() => {
-      this.refreshData.emit();
-    });
-  }
-
-  deleteEvidence(item: EvidenceItem): void {
-    // Zero hard-delete: redirect to Request Removal
-    this.openRequestRemovalModal(item);
+    if (confirm(`Are you sure you want to permanently delete evidence item ${item.evidenceTag}?`)) {
+      this.evidenceService.deleteEvidence(item.id!).subscribe({
+        next: () => {
+          this.refreshData.emit();
+        },
+        error: (err) => {
+          alert(`Cannot delete item: ${err.error || err.message}`);
+        }
+      });
+    }
   }
 
   openAiRedactor(item: EvidenceItem): void {

@@ -6,7 +6,7 @@ public class CustodyEvent {
     private Long id;
     private Long evidenceItemId;
     private String actorId;
-    private String action; // 'UPLOADED', 'VIEWED', 'DOWNLOADED', 'TRANSFERRED', 'ANALYZED', 'RELEASED', 'DISPOSED', 'INTEGRITY_ALERT', 'REMOVAL_REQUESTED', 'REMOVAL_APPROVED', 'REMOVAL_REJECTED', 'EVIDENCE_REMOVED', 'REPORT_EXPORTED'
+    private String action; // 'UPLOADED', 'VIEWED', 'DOWNLOADED', 'TRANSFERRED', 'ANALYZED', 'RELEASED', 'DISPOSED', 'INTEGRITY_ALERT'
     private Timestamp timestamp;
     private String fromCustodianId;
     private String toCustodianId;

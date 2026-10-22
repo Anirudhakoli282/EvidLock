@@ -60,12 +60,6 @@ public class FileService {
             }
         }
 
-        // Block download if evidence has been removed
-        if (item != null && "REMOVED".equalsIgnoreCase(item.getStatus())) {
-            return ResponseEntity.status(HttpStatus.GONE)
-                    .body("EVIDENCE REMOVED: File payload has been sealed/purged pursuant to court order. Only the cryptographic tombstone digest is preserved.");
-        }
-
         try {
             byte[] fileBytes = Files.readAllBytes(file.toPath());
 
@@ -109,6 +103,20 @@ public class FileService {
 
     @DeleteMapping("/delete-file")
     public ResponseEntity<String> deleteFile(HttpServletRequest req, @RequestParam("path") String path) {
-        return new ResponseEntity<>("Operation blocked: Direct deletion of evidence files is permanently prohibited. Use the controlled judicial removal process.", HttpStatus.FORBIDDEN);
+        User user = Utility.getRequestUser(req);
+        if (user == null || !"SUPERVISOR".equalsIgnoreCase(user.getRole())) {
+            return new ResponseEntity<>("Only supervisors may remove evidence files", HttpStatus.FORBIDDEN);
+        }
+
+        // Check legal hold
+        List<EvidenceItem> all = DBManager.getInstance().getEvidenceItemDao().getAll();
+        for (EvidenceItem e : all) {
+            if (path.equalsIgnoreCase(e.getFilePath()) && e.isLegalHold()) {
+                return new ResponseEntity<>("Operation blocked: Evidence item is under active Legal Hold", HttpStatus.LOCKED);
+            }
+        }
+
+        return Utility.deleteFile(path) ? new ResponseEntity<>("File deleted", HttpStatus.OK)
+                : new ResponseEntity<>("Failed to delete file", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

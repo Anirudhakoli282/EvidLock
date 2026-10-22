@@ -51,11 +51,11 @@
             <span class="badge bg-dark rounded-pill me-2">Block #{{ i + 1 }}</span>
             <span class="badge" [ngClass]="{
               'bg-primary': event.action === 'UPLOADED',
-              'bg-info text-dark': event.action === 'TRANSFERRED' || event.action === 'REPORT_EXPORTED',
-              'bg-success': event.action === 'ANALYZED' || event.action === 'REMOVAL_APPROVED',
-              'bg-secondary': event.action === 'VIEWED' || event.action === 'DOWNLOADED' || event.action === 'REMOVAL_REJECTED',
-              'bg-danger': event.action === 'INTEGRITY_ALERT' || event.action === 'DISPOSED' || event.action === 'EVIDENCE_REMOVED',
-              'bg-warning text-dark': event.action === 'LEGAL_HOLD_PLACED' || event.action === 'LEGAL_HOLD_LIFTED' || event.action === 'REMOVAL_REQUESTED'
+              'bg-info text-dark': event.action === 'TRANSFERRED',
+              'bg-success': event.action === 'ANALYZED',
+              'bg-secondary': event.action === 'VIEWED' || event.action === 'DOWNLOADED',
+              'bg-danger': event.action === 'INTEGRITY_ALERT' || event.action === 'DISPOSED',
+              'bg-warning text-dark': event.action === 'LEGAL_HOLD_PLACED' || event.action === 'LEGAL_HOLD_LIFTED'
             }">{{ event.action }}</span>
           </div>
           <small class="text-muted"><i class="bi bi-clock me-1"></i>{{ event.timestamp | date:'medium' }}</small>

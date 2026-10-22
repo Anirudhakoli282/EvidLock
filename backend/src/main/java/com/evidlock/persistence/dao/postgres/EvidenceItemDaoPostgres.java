@@ -43,16 +43,6 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
         item.setRetentionDate(rs.getDate("retention_date"));
         item.setAgencyCode(rs.getString("agency_code"));
 
-        // Removal governance fields
-        try {
-            item.setRemovalRequestedBy(rs.getString("removal_requested_by"));
-            item.setRemovalApprovedBy(rs.getString("removal_approved_by"));
-            item.setRemovalReason(rs.getString("removal_reason"));
-            item.setLegalRef(rs.getString("legal_ref"));
-            item.setRemovalRequestedAt(rs.getTimestamp("removal_requested_at"));
-            item.setRemovedAt(rs.getTimestamp("removed_at"));
-        } catch (SQLException ignored) {}
-
         // Join case number if available
         try {
             item.setCaseNumber(rs.getString("case_number"));
@@ -228,12 +218,20 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
 
     @Override
     public boolean delete(Long id) {
+        // ENFORCE LEGAL HOLD AT DAO LAYER
         EvidenceItem existing = findById(id);
         if (existing != null && existing.isLegalHold()) {
             throw new IllegalStateException("Operation blocked: Evidence item " + existing.getEvidenceTag() +
                     " is under active Legal Hold and cannot be deleted.");
         }
-        throw new IllegalStateException("Hard deletion of evidence records is permanently disabled by system policy and ISO 27037 standards. Removal must proceed via the supervised removal approval workflow.");
+
+        String sql = "DELETE FROM evidence_items WHERE id = ?";
+        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
+            st.setLong(1, id);
+            return st.executeUpdate() > 0;
+        } catch (SQLException e) {
+            throw new RuntimeException("Error deleting evidence item " + id, e);
+        }
     }
 
     @Override
@@ -353,55 +351,6 @@ public class EvidenceItemDaoPostgres implements EvidenceItemDao {
             }
         } catch (SQLException e) {
             throw new RuntimeException("Error searching evidence items", e);
-        }
-        return list;
-    }
-
-    @Override
-    public boolean updateRemovalStatus(EvidenceItem item) {
-        String sql = "UPDATE evidence_items SET status = ?, removal_requested_by = ?, removal_approved_by = ?, " +
-                "removal_reason = ?, legal_ref = ?, removal_requested_at = ?, removed_at = ? WHERE id = ?";
-        try (PreparedStatement st = getConnection().prepareStatement(sql)) {
-            st.setString(1, item.getStatus());
-            st.setString(2, item.getRemovalRequestedBy());
-            st.setString(3, item.getRemovalApprovedBy());
-            st.setString(4, item.getRemovalReason());
-            st.setString(5, item.getLegalRef());
-            st.setTimestamp(6, item.getRemovalRequestedAt());
-            st.setTimestamp(7, item.getRemovedAt());
-            st.setLong(8, item.getId());
-            return st.executeUpdate() > 0;
-        } catch (SQLException e) {
-            throw new RuntimeException("Error updating removal status for evidence " + item.getId(), e);
-        }
-    }
-
-    @Override
-    public List<EvidenceItem> findPendingRemovals() {
-        List<EvidenceItem> list = new ArrayList<>();
-        String sql = BASE_SELECT + "WHERE e.status = 'REMOVAL_REQUESTED' ORDER BY e.removal_requested_at DESC";
-        try (PreparedStatement st = getConnection().prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error fetching pending removals", e);
-        }
-        return list;
-    }
-
-    @Override
-    public List<EvidenceItem> findRemoved() {
-        List<EvidenceItem> list = new ArrayList<>();
-        String sql = BASE_SELECT + "WHERE e.status = 'REMOVED' ORDER BY e.removed_at DESC";
-        try (PreparedStatement st = getConnection().prepareStatement(sql);
-             ResultSet rs = st.executeQuery()) {
-            while (rs.next()) {
-                list.add(mapRow(rs));
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("Error fetching removed evidence", e);
         }
         return list;
     }

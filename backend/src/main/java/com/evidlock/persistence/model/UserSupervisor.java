@@ -165,79 +165,19 @@ public class UserSupervisor extends User {
 
     @Override
     public ResponseEntity<String> deleteEvidence(Long id) {
-        return new ResponseEntity<>("Hard deletion is prohibited by system policy and ISO 27037 standards. Removal must proceed via the supervised removal approval workflow.", HttpStatus.FORBIDDEN);
-    }
+        try {
+            EvidenceItem item = DBManager.getInstance().getEvidenceItemDao().findById(id);
+            if (item == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
-    @Override
-    public ResponseEntity<String> requestEvidenceRemoval(Long evidenceId, String reason, String password, String legalRef) {
-        // 1. Password verification
-        if (password == null || !Utility.checkPassword(password, this)) {
-            return new ResponseEntity<>("Authentication failure: Invalid supervisor password for removal authorization", HttpStatus.UNAUTHORIZED);
+            boolean deleted = DBManager.getInstance().getEvidenceItemDao().delete(id);
+            if (deleted) {
+                Utility.deleteFile(item.getFilePath());
+                return new ResponseEntity<>("Evidence deleted successfully", HttpStatus.OK);
+            }
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (IllegalStateException e) {
+            return new ResponseEntity<>("Operation blocked: Evidence is under active Legal Hold", HttpStatus.LOCKED);
         }
-
-        // 2. Reason validation (min 20 characters)
-        if (reason == null || reason.trim().length() < 20) {
-            return new ResponseEntity<>("Mandatory removal justification requires at least 20 characters", HttpStatus.BAD_REQUEST);
-        }
-
-        // 3. Evidence existence
-        EvidenceItem item = DBManager.getInstance().getEvidenceItemDao().findById(evidenceId);
-        if (item == null) {
-            return new ResponseEntity<>("Evidence item not found", HttpStatus.NOT_FOUND);
-        }
-
-        // 4. Rule check: Legal Hold LOCKED
-        if (item.isLegalHold()) {
-            return new ResponseEntity<>("Operation blocked: Evidence item is under active Legal Hold and cannot be requested for removal", HttpStatus.LOCKED);
-        }
-
-        // 5. Rule check: In-transfer evidence
-        List<CustodyTransferRequest> transfers = DBManager.getInstance().getCustodyTransferRequestDao().findByEvidenceItem(evidenceId);
-        if (transfers != null && transfers.stream().anyMatch(t -> "PENDING".equalsIgnoreCase(t.getStatus()))) {
-            return new ResponseEntity<>("Operation blocked: Evidence item has a pending custody transfer in progress", HttpStatus.CONFLICT);
-        }
-
-        // 6. Rule check: Integrity status must be VERIFIED / SECURE (tampered evidence must be preserved as proof)
-        if (!"VERIFIED".equalsIgnoreCase(item.getIntegrityStatus())) {
-            return new ResponseEntity<>("Operation blocked: Evidence integrity status is " + item.getIntegrityStatus() + ". Compromised evidence must be preserved as criminal proof.", HttpStatus.CONFLICT);
-        }
-
-        // 7. Rule check: Retention date passed OR court order / legal ref provided
-        boolean retentionPassed = (item.getRetentionDate() != null && item.getRetentionDate().getTime() <= System.currentTimeMillis());
-        boolean hasLegalRef = (legalRef != null && !legalRef.trim().isEmpty());
-        if (!retentionPassed && !hasLegalRef) {
-            return new ResponseEntity<>("Removal request requires either an expired retention date or a valid court order / case-closure legal reference", HttpStatus.BAD_REQUEST);
-        }
-
-        // 8. Update status to REMOVAL_REQUESTED
-        item.setStatus("REMOVAL_REQUESTED");
-        item.setRemovalRequestedBy(this.email);
-        item.setRemovalReason(reason.trim());
-        item.setLegalRef(hasLegalRef ? legalRef.trim() : null);
-        item.setRemovalRequestedAt(new java.sql.Timestamp(System.currentTimeMillis()));
-
-        boolean updated = DBManager.getInstance().getEvidenceItemDao().updateRemovalStatus(item);
-        if (!updated) {
-            return new ResponseEntity<>("Failed to update evidence removal status in database", HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-        // 9. Append REMOVAL_REQUESTED block to hash chain ledger
-        HashChainService.getInstance().logEvent(
-                item.getId(),
-                this.email,
-                "REMOVAL_REQUESTED",
-                item.getCurrentCustodianId(),
-                item.getCurrentCustodianId(),
-                "Removal requested by Supervisor " + this.name + " (" + this.badgeNumber + "). Reason: " + reason.trim() +
-                        (hasLegalRef ? " | Legal Ref: " + legalRef.trim() : "")
-        );
-
-        return new ResponseEntity<>("Evidence removal request submitted successfully. Awaiting independent Court / Judicial approval.", HttpStatus.OK);
-    }
-
-    @Override
-    public ResponseEntity<List<EvidenceItem>> getPendingRemovals() {
-        return new ResponseEntity<>(DBManager.getInstance().getEvidenceItemDao().findPendingRemovals(), HttpStatus.OK);
     }
 
     @Override
@@ -290,10 +230,6 @@ public class UserSupervisor extends User {
 
         EvidenceItem item = DBManager.getInstance().getEvidenceItemDao().findById(dto.getEvidenceItemId());
         if (item == null) return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-
-        if ("REMOVED".equalsIgnoreCase(item.getStatus()) || "REMOVAL_REQUESTED".equalsIgnoreCase(item.getStatus())) {
-            return new ResponseEntity<>(HttpStatus.CONFLICT);
-        }
 
         CustodyTransferRequest req = new CustodyTransferRequest();
         req.setEvidenceItemId(item.getId());
@@ -373,8 +309,6 @@ public class UserSupervisor extends User {
         m.put("compromisedCount", DBManager.getInstance().getEvidenceItemDao().findIntegrityCompromised().size());
         m.put("nearingRetentionCount", DBManager.getInstance().getEvidenceItemDao().findNearingRetention(30).size());
         m.put("disposalEligibleCount", DBManager.getInstance().getEvidenceItemDao().findEligibleForDisposal().size());
-        m.put("pendingRemovalsCount", allEvidence.stream().filter(e -> "REMOVAL_REQUESTED".equalsIgnoreCase(e.getStatus())).count());
-        m.put("removedCount", allEvidence.stream().filter(e -> "REMOVED".equalsIgnoreCase(e.getStatus())).count());
         m.put("recentEvents", DBManager.getInstance().getCustodyEventDao().findRecent(10));
         m.put("pendingTransfersCount", DBManager.getInstance().getCustodyTransferRequestDao().getAllPending().size());
 

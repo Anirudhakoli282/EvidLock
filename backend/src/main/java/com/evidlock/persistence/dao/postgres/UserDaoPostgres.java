@@ -41,8 +41,6 @@ public class UserDaoPostgres implements UserDao {
                 return new UserCustodian();
             case "AUDITOR":
                 return new UserAuditor();
-            case "COURT":
-                return new UserCourt();
             default:
                 return new User();
         }

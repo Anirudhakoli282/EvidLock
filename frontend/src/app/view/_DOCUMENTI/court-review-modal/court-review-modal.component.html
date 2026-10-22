@@ -52,45 +52,26 @@
     </div>
   </div>
 
-  <!-- REMOVED Status Banner -->
-  <div *ngIf="isRemoved()" class="alert alert-danger border-danger d-flex align-items-center mb-4 shadow-sm" role="alert">
-    <i class="bi bi-shield-x fs-2 text-danger me-3"></i>
-    <div>
-      <h6 class="alert-heading fw-bold mb-1">REMOVED on {{ getRemovalDate() }} - record preserved</h6>
-      <p class="mb-0 small">Evidence payload decommissioned pursuant to Court Order: <strong>{{ evidenceItem?.legalRef || 'N/A' }}</strong>. Cryptographic SHA-256 hash seal, cipher metadata, and immutable ledger are permanently preserved as tombstone record.</p>
-    </div>
-  </div>
-
   <!-- Section 65B & Section 63 BSA Judicial Admissibility Checklist -->
   <div class="card border-0 shadow-sm mb-4">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
       <h6 class="fw-bold mb-0 text-dark">
         <i class="bi bi-file-earmark-check-fill text-success me-2"></i>Indian Evidence Act Sec. 65B & BSA Sec. 63 Admissibility Checklist
       </h6>
-      <span class="badge bg-success-subtle text-success border border-success">6 Criteria Evaluated</span>
+      <span class="badge bg-success-subtle text-success border border-success">5 / 5 Criteria Passed</span>
     </div>
     <div class="list-group list-group-flush">
       <div *ngFor="let item of checklist" class="list-group-item p-3 d-flex align-items-start">
         <div class="me-3 mt-1">
-          <i class="bi fs-5" [ngClass]="item.status ? 'bi-check-circle-fill text-success' : 'bi-exclamation-triangle-fill text-warning'"></i>
+          <i class="bi bi-check-circle-fill fs-5 text-success"></i>
         </div>
         <div class="flex-grow-1">
           <div class="fw-bold text-dark">{{ item.title }}</div>
           <small class="text-muted">{{ item.detail }}</small>
         </div>
-        <span class="badge" [ngClass]="item.status ? 'bg-success-subtle text-success border border-success' : 'bg-warning-subtle text-dark border border-warning'">
-          {{ item.status ? 'COMPLIANT' : 'WARNING' }}
-        </span>
+        <span class="badge bg-success-subtle text-success border border-success">COMPLIANT</span>
       </div>
     </div>
-  </div>
-
-  <!-- Statutory Removal Plain Text Note -->
-  <div *ngIf="isRemoved()" class="p-3 bg-white rounded border border-warning-subtle mb-3 shadow-sm">
-    <div class="fw-bold text-dark small mb-1"><i class="bi bi-info-circle-fill text-primary me-1"></i>Certificate Removal Endorsement:</div>
-    <p class="small text-muted font-monospace mb-0">
-      TODO: [Review by Legal Counsel] This electronic evidence record was decommissioned under authorized court disposal procedure on {{ getRemovalDate() }} pursuant to Legal Ref: {{ evidenceItem?.legalRef || 'N/A' }}. Cryptographic SHA-256 hash seal and append-only ledger are permanently preserved.
-    </p>
   </div>
 
 </div>

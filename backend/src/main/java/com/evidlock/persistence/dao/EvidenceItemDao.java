@@ -21,7 +21,4 @@ public interface EvidenceItemDao {
     List<EvidenceItem> findNearingRetention(int days);
     List<EvidenceItem> findIntegrityCompromised();
     List<EvidenceItem> search(List<String> keywords);
-    boolean updateRemovalStatus(EvidenceItem item);
-    List<EvidenceItem> findPendingRemovals();
-    List<EvidenceItem> findRemoved();
 }

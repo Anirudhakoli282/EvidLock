@@ -30,9 +30,7 @@ export class DashboardComponent implements OnInit {
     compromisedCount: 0,
     nearingRetentionCount: 1,
     disposalEligibleCount: 0,
-    pendingTransfersCount: 1,
-    pendingRemovalsCount: 0,
-    removedCount: 0
+    pendingTransfersCount: 1
   };
 
   recentEvents: CustodyEvent[] = [];
